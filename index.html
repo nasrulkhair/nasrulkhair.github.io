@@ -228,33 +228,35 @@
 		</section>
 
 
-				<!-- Contact -->
-					<section id="contact" class="four">
-						<div class="container">
+			<!-- Contact -->
+				<section id="contact" class="four">
+					<div class="container">
 
-							<header>
-								<h2>Contact</h2>
-							</header>
+						<header>
+							<h2>Contact</h2>
+						</header>
 
-							<p>Lets connect!</p>
+						<p>Let's connect!</p>
 
-							<form method="post" action="#">
-								<div class="row">
-									<div class="col-6 col-12-mobile"><input type="text" name="name" placeholder="Name" /></div>
-									<div class="col-6 col-12-mobile"><input type="text" name="email" placeholder="Email" /></div>
-									<div class="col-12">
-										<textarea name="message" placeholder="Message"></textarea>
-									</div>
-									<div class="col-12">
-										<input type="submit" value="Send Message" />
-									</div>
+						<form action="https://formspree.io/f/moveajwz" method="POST">
+							<div class="row">
+								<div class="col-6 col-12-mobile">
+									<input type="text" name="name" placeholder="Name" required />
 								</div>
-							</form>
+								<div class="col-6 col-12-mobile">
+									<input type="email" name="email" placeholder="Email" required />
+								</div>
+								<div class="col-12">
+									<textarea name="message" placeholder="Message" required></textarea>
+								</div>
+								<div class="col-12">
+									<input type="submit" value="Send Message" />
+								</div>
+							</div>
+						</form>
 
-						</div>
-					</section>
-
-			</div>
+					</div>
+				</section>
 
 		<!-- Footer -->
 			<div id="footer">
