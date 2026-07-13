@@ -324,3 +324,21 @@ footer p{font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monos
 
 @media (max-width: 900px){ .exp-stats{grid-template-columns:1fr 1fr;} }
 @media (max-width: 520px){ .exp-stats{grid-template-columns:1fr;} }
+
+/* ============ SKILLS — logos + 3+2 layout ============ */
+.skills-cols{grid-template-columns:repeat(3,1fr);}   /* 3 on top, wraps to 2 */
+.skill-col ul li{display:flex; align-items:center; gap:10px; padding:7px 0;}
+.skill-col ul li svg{width:18px; height:18px; flex-shrink:0;}
+.skill-col ul li span{flex:1;}
+
+/* featured main-skill logo strip */
+.main-skills{margin-top:44px; text-align:center;}
+.main-skills .ms-label{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent-deep); text-transform:uppercase; letter-spacing:.1em; margin-bottom:22px;}
+.main-skills .ms-row{display:flex; justify-content:center; align-items:center; gap:20px; flex-wrap:wrap;}
+.main-skills .ms-item{display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 26px; min-width:130px; transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;}
+.main-skills .ms-item:hover{border-color:var(--accent); transform:translateY(-3px); box-shadow:0 14px 30px rgba(27,35,49,0.08);}
+.main-skills .ms-item svg{width:46px; height:46px;}
+.main-skills .ms-item .ms-name{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink); font-weight:500;}
+
+@media (max-width: 900px){ .skills-cols{grid-template-columns:1fr 1fr;} }
+@media (max-width: 520px){ .skills-cols{grid-template-columns:1fr;} .main-skills .ms-item{min-width:110px; padding:18px;} }
