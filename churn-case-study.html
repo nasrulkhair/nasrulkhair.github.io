@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Churn Analysis — Case Study | Nasrul Khair</title>
+<meta name="description" content="End-to-end banking customer churn analytics case study — Snowflake, SQL, Python, and Power BI by Nasrul Khair.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="dot"></span>Nasrul Khair</a>
+    <div class="links"><a href="index.html">Home</a><a href="about.html">About</a><a href="experience.html">Experience</a><a href="projects.html" class="active">Projects</a><a href="extra.html">Extra Work</a><a href="certifications.html">Certifications</a><a href="skills.html">Skills</a><a href="contact.html">Contact</a></div>
+  </div>
+</nav>
+<main>
+
+<section class="cs-hero">
+  <div class="wrap">
+    <a class="cs-back" href="projects.html">← Back to projects</a>
+    <div class="flag-badge">★ Flagship project</div>
+    <h1>Customer Churn Analysis &amp; Retention Strategy</h1>
+    <p class="cs-sub">An end-to-end banking analytics build — from business requirements through a Snowflake warehouse, star-schema model, SQL analysis, and an executive Power BI dashboard.</p>
+    <div class="cs-tags"><span>Banking Analytics</span><span>End-to-End</span><span>ETL</span><span>Data Modeling</span><span>EDA</span><span>Power BI</span></div>
+    <div class="cs-stats">
+      <div class="cs-stat"><div class="n">10K</div><div class="l">customers analyzed</div></div>
+      <div class="cs-stat"><div class="n">20.37%</div><div class="l">overall churn rate</div></div>
+      <div class="cs-stat"><div class="n">6</div><div class="l">dimension tables</div></div>
+      <div class="cs-stat"><div class="n">32.4%</div><div class="l">highest churn (Germany)</div></div>
+    </div>
+    <div class="cs-actions">
+      <a class="btn btn-accent" href="projects/churn-full-report.pdf" target="_blank" rel="noopener">📄 Read the full report (PDF)</a>
+      <a class="btn btn-outline-light" href="https://github.com/nasrulkhair/Full-Project" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<div class="cs-body">
+  <div class="wrap">
+
+    <div class="cs-section">
+      <div class="cs-num">01 · Overview</div>
+      <h2>The problem</h2>
+      <p>A bank wanted to understand <strong>why customers were leaving</strong> and how to keep them. The raw data was a single unstructured CSV of 10,000 customers — demographics, financial indicators, and banking behavior — with no pipeline, no model, and no reporting.</p>
+      <p>My goal was to build the whole solution end-to-end: a repeatable data pipeline from ingestion to dashboard, a clear churn rate and risk segmentation, and actionable retention insights management could monitor over time. I owned every role on this project — business analyst, data engineer, data modeler, analyst, and BI developer.</p>
+      <div class="cs-callout"><p><strong>Headline result:</strong> a 20.37% churn rate identified against a 15% target, with Germany, inactive members, and older customers pinpointed as the highest-risk segments — each mapped to a concrete retention recommendation.</p></div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-num">02 · Tools &amp; stack</div>
+      <h2>What I used</h2>
+      <div class="tool-grid"><div class="tool-item"><svg viewBox="0 0 24 24"><path fill="#387EB8" d="M11.9 2c-1.9 0-3.4.2-4.4.5-1 .3-1.5.9-1.5 2v2.1h6v.8H4.2c-1.2 0-2.2.7-2.5 2C1.3 11 1.3 12 1.7 13.6c.3 1.2 1 2 2.2 2h1.5v-1.8c0-1.3 1.2-2.5 2.5-2.5h4c1.1 0 2-.9 2-2V4.5c0-1.1-.8-1.9-2-2.1C9.9 2.1 9 2 8 2h3.9zm-3.2 1.6c.4 0 .8.3.8.8s-.4.8-.8.8-.8-.3-.8-.8.3-.8.8-.8z"/><path fill="#FFC331" d="M12.1 22c1.9 0 3.4-.2 4.4-.5 1-.3 1.5-.9 1.5-2v-2.1h-6v-.8h7.8c1.2 0 2.2-.7 2.5-2 .3-1.5.3-2.6-.1-4.1-.3-1.2-1-2-2.2-2h-1.5v1.8c0 1.3-1.2 2.5-2.5 2.5h-4c-1.1 0-2 .9-2 2v3.6c0 1.1.8 1.9 2 2.1 1.5.4 2.4.5 3.4.5h-3.9zm3.2-1.6c-.4 0-.8-.3-.8-.8s.4-.8.8-.8.8.3.8.8-.3.8-.8.8z"/></svg><div><div class="ti-name">Python</div><div class="ti-role">Extraction & cleaning</div></div></div><div class="tool-item"><svg viewBox="0 0 24 24" fill="none" stroke="#8F6620" stroke-width="1.6"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><div><div class="ti-name">SQL</div><div class="ti-role">Transformation & KPIs</div></div></div><div class="tool-item"><svg viewBox="0 0 24 24" fill="none" stroke="#29B5E8" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/><path d="M12 6l-2-1.6M12 6l2-1.6M12 18l-2 1.6M12 18l2 1.6M6 12l-1.6-2M6 12l-1.6 2M18 12l1.6-2M18 12l1.6 2" stroke-width="1.2"/></svg><div><div class="ti-name">Snowflake</div><div class="ti-role">Data warehouse</div></div></div><div class="tool-item"><svg viewBox="0 0 24 24"><path fill="#F2C811" d="M14 3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4V3z"/><path fill="#E6A000" d="M8.5 8h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4V8z" opacity=".85"/><path fill="#C87E00" d="M3 13h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3v-8z" opacity=".9"/></svg><div><div class="ti-name">Power BI</div><div class="ti-role">Dashboards & DAX</div></div></div><div class="tool-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#11557C" stroke-width="1.4"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" stroke="#11557C" stroke-width=".7" opacity=".5"/><path d="M12 12l6-2.5" stroke="#FF7F0E" stroke-width="1.8" stroke-linecap="round"/></svg><div><div class="ti-name">Matplotlib</div><div class="ti-role">EDA charts</div></div></div><div class="tool-item"><svg viewBox="0 0 24 24" fill="#2684FF"><path d="M12 2 3 11h4.5L12 6.5 16.5 11H21z" opacity=".55"/><path d="M12 22l9-9h-4.5L12 17.5 7.5 13H3z"/></svg><div><div class="ti-name">Jira</div><div class="ti-role">Agile delivery</div></div></div><div class="tool-item"><svg viewBox="0 0 24 24" fill="#F05033"><path d="M23 11 13 1a1.4 1.4 0 0 0-2 0L8.9 3.1l2.6 2.6a1.7 1.7 0 0 1 2.2 2.1l2.5 2.5a1.7 1.7 0 1 1-1 1l-2.3-2.3v6.1a1.7 1.7 0 1 1-1.4 0V9a1.7 1.7 0 0 1-.9-2.2L8 4.2 1 11a1.4 1.4 0 0 0 0 2l10 10a1.4 1.4 0 0 0 2 0l10-10a1.4 1.4 0 0 0 0-2z"/></svg><div><div class="ti-name">Git / GitHub</div><div class="ti-role">Version control</div></div></div></div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-num">03 · Business requirements (BRD)</div>
+      <h2>Defining the questions first</h2>
+      <p>Before touching data, I wrote a Business Requirement Document to anchor the work in real objectives.</p>
+      <h3>Business objectives</h3>
+      <ul>
+        <li>Identify the characteristics of customers likely to churn</li>
+        <li>Quantify the churn rate and segment customers by risk level</li>
+        <li>Develop actionable insights for a retention strategy</li>
+        <li>Enable management to monitor churn KPIs through Power BI</li>
+        <li>Establish a repeatable pipeline from ingestion to reporting</li>
+      </ul>
+      <h3>Key business questions</h3>
+      <ul>
+        <li>What is the overall churn rate, and how does it break down by segment?</li>
+        <li>How do age, tenure, and balance influence churn likelihood?</li>
+        <li>Are inactive customers or non-cardholders more likely to churn?</li>
+        <li>Which geography or gender shows higher churn trends?</li>
+        <li>How do credit-score segments correlate with churn?</li>
+      </ul>
+      <h3>The dataset</h3>
+      <p>10,000 rows of structured customer data — credit score, geography, gender, age, tenure, balance, products held, credit-card ownership, activity status, estimated salary, and the churn flag (Exited) — plus each customer's date of joining.</p>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-num">04 · Process</div>
+      <h2>The pipeline, step by step</h2>
+      <p>I structured the build as six sprints, managed in Jira, moving data through a layered Snowflake warehouse.</p>
+      <div class="flow-row">
+        <span class="flow-chip">Source CSV</span><span class="flow-arrow">→</span>
+        <span class="flow-chip">Snowflake RAW</span><span class="flow-arrow">→</span>
+        <span class="flow-chip">Clean &amp; Transform</span><span class="flow-arrow">→</span>
+        <span class="flow-chip">Snowflake CLEAN</span><span class="flow-arrow">→</span>
+        <span class="flow-chip">Star Schema (ANALYTICS)</span><span class="flow-arrow">→</span>
+        <span class="flow-chip">Power BI</span>
+      </div>
+      <div class="pipeline">
+        <div class="pipe-step"><div class="ps-num">1</div><h4>Warehouse setup</h4><p>Built the Snowflake database and warehouse with three schemas — RAW, CLEAN, ANALYTICS — and defined naming conventions.</p></div>
+        <div class="pipe-step"><div class="ps-num">2</div><h4>Load raw data</h4><p>Staged and loaded the CSV into RAW via COPY INTO, then validated row counts, headers, and data types.</p></div>
+        <div class="pipe-step"><div class="ps-num">3</div><h4>Clean &amp; transform</h4><p>In Python: renamed columns, cast dates, mapped IDs to labels (geography, gender, churn status), dropped noise, and wrote the result to CLEAN.</p></div>
+        <div class="pipe-step"><div class="ps-num">4</div><h4>Star-schema model</h4><p>Designed a fact table (Fact_Customer_Churn) with six dimensions — Customer, Geography, Gender, Exit, Active, Credit Card — with FK constraints and an ER diagram.</p></div>
+        <div class="pipe-step"><div class="ps-num">5</div><h4>EDA &amp; SQL analysis</h4><p>Univariate, bivariate, and correlation analysis in Python; core business questions answered with SQL in Snowflake.</p></div>
+        <div class="pipe-step"><div class="ps-num">6</div><h4>Power BI dashboard</h4><p>Connected Power BI to Snowflake, built DAX measures and enriched dimensions, and designed an executive dashboard.</p></div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-num">05 · Key findings</div>
+      <h2>What the data revealed</h2>
+      <div class="find-grid">
+        <div class="find-card"><div class="fc-metric">Geography</div><h4>Germany churns 2× more</h4><p>Germany's churn rate hit 32.4% — nearly double France (16.2%) and Spain (16.7%) — despite having the highest average credit score, pointing to non-financial causes.</p></div>
+        <div class="find-card"><div class="fc-metric">Activity · corr −0.156</div><h4>Inactive members churn ~3× more</h4><p>The strongest behavioral signal. Active customers are significantly less likely to leave — engagement is the key retention lever.</p></div>
+        <div class="find-card"><div class="fc-metric">Age · corr +0.285</div><h4>Older customers leave more</h4><p>Churn rises sharply with age — the 50s segment showed a 56% churn rate, versus under 8% for the under-30s.</p></div>
+        <div class="find-card"><div class="fc-metric">Products</div><h4>Product overload backfires</h4><p>Customers holding 3–4 products churned the most (up to 100% at 4 products), suggesting complexity or product fatigue despite higher balances.</p></div>
+        <div class="find-card"><div class="fc-metric">Gender</div><h4>Women churn slightly more</h4><p>Female churn (~25%) ran higher than male (~16%), most pronounced in Germany (~37.6%).</p></div>
+        <div class="find-card"><div class="fc-metric">Trend</div><h4>Improving since 2017</h4><p>Churn peaked around 2017 (22.4%) and eased toward 19–20% by 2019 — but stayed above the 15% target every year.</p></div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-num">06 · KPIs &amp; dashboard</div>
+      <h2>What management monitors</h2>
+      <p>The executive Power BI dashboard tracks the metrics that matter, each tied to a target:</p>
+      <table class="kpi-table">
+        <thead><tr><th>KPI</th><th>Result</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Churn Rate</td><td>20.37%</td><td>Share of customers who left — above the 15% target</td></tr>
+          <tr><td>Retention Rate</td><td>~79.6%</td><td>Customers retained across the period</td></tr>
+          <tr><td>Avg. Tenure</td><td>4.86 yrs</td><td>Moderate customer lifetime</td></tr>
+          <tr><td>Highest-risk region</td><td>Germany 32.4%</td><td>Priority market for intervention</td></tr>
+          <tr><td>Activity effect</td><td>~3× churn</td><td>Inactive vs active members</td></tr>
+        </tbody>
+      </table>
+      <h3>Recommendations delivered</h3>
+      <ul>
+        <li><strong>Re-engage inactive customers</strong> — the single biggest lever, with targeted campaigns for dormant high-value accounts</li>
+        <li><strong>Investigate Germany</strong> — satisfaction surveys and competitor benchmarking, since churn there isn't credit-driven</li>
+        <li><strong>Loyalty benefits for older, longer-tenure customers</strong> to counter age-linked attrition</li>
+        <li><strong>Simplify multi-product relationships</strong> and cross-sell thoughtfully rather than overloading</li>
+      </ul>
+      <div class="cs-actions" style="margin-top:26px;">
+        <a class="btn btn-accent" href="projects/churn-full-report.pdf" target="_blank" rel="noopener">📄 Read the full report (PDF)</a>
+        <a class="btn btn-outline" href="https://github.com/nasrulkhair/Full-Project" target="_blank" rel="noopener">Explore the code on GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+<footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p></div></footer>
+<script>document.querySelectorAll('.year').forEach(function(y){y.textContent=new Date().getFullYear();});</script>
+</body>
+</html>
