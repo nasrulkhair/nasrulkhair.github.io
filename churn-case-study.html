@@ -114,7 +114,34 @@
     </div>
 
     <div class="cs-section">
-      <div class="cs-num">06 · KPIs &amp; dashboard</div>
+      <div class="cs-num">06 · Live dashboard</div>
+      <h2>Explore the report yourself</h2>
+      <p>The full executive dashboard is embedded below — filter, cross-highlight, and drill through exactly as you would in Power BI.</p>
+
+      <!-- ============================================================
+           POWER BI EMBED
+           To go live:
+           1. Power BI Service → open report → File → Embed report
+              → Publish to web (public)
+           2. Copy the src URL from the iframe Power BI gives you
+           3. Paste it into data-embed below, then delete the
+              .pbi-placeholder div underneath
+           ============================================================ -->
+      <div class="pbi-frame" data-embed="">
+        <div class="pbi-placeholder">
+          <div class="pbi-ph-icon">
+            <svg viewBox="0 0 24 24"><path fill="#F2C811" d="M14 3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4V3z"/><path fill="#E6A000" d="M8.5 8h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4V8z" opacity=".85"/><path fill="#C87E00" d="M3 13h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3v-8z" opacity=".9"/></svg>
+          </div>
+          <h4>Interactive Power BI dashboard</h4>
+          <p>The live embed is being prepared. In the meantime, the full report walks through every page in detail.</p>
+          <a class="btn btn-accent" href="projects/churn-full-report.pdf" target="_blank" rel="noopener">📄 View the dashboard in the report</a>
+        </div>
+      </div>
+      <div class="pbi-note">Best viewed on desktop · use the page tabs at the bottom of the report to move between dashboard pages.</div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-num">07 · KPIs &amp; dashboard</div>
       <h2>What management monitors</h2>
       <p>The executive Power BI dashboard tracks the metrics that matter, each tied to a target:</p>
       <table class="kpi-table">
@@ -146,5 +173,21 @@
 </main>
 <footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p></div></footer>
 <script>document.querySelectorAll('.year').forEach(function(y){y.textContent=new Date().getFullYear();});</script>
+<script>
+/* Swaps the placeholder for a real Power BI iframe once data-embed has a URL. */
+document.querySelectorAll('.pbi-frame').forEach(function(box){
+  var url = (box.getAttribute('data-embed') || '').trim();
+  if (!url) return;
+  box.innerHTML = '';
+  var f = document.createElement('iframe');
+  f.src = url;
+  f.title = 'Customer Churn Power BI dashboard';
+  f.setAttribute('frameborder', '0');
+  f.setAttribute('allowfullscreen', 'true');
+  f.setAttribute('loading', 'lazy');
+  box.appendChild(f);
+  box.classList.add('is-live');
+});
+</script>
 </body>
 </html>

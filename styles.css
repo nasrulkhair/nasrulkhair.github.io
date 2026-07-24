@@ -418,3 +418,37 @@ footer p{font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monos
   .find-grid{grid-template-columns:1fr;}
   .cs-hero .cs-stats{gap:22px;}
 }
+
+/* ============ POWER BI EMBED (case study) ============ */
+.pbi-frame{
+  position:relative; width:100%; margin-top:22px;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  overflow:hidden; box-shadow:0 14px 30px rgba(27,35,49,0.06);
+}
+.pbi-frame.is-live{padding-bottom:62.5%; height:0;}
+.pbi-frame.is-live iframe{
+  position:absolute; top:0; left:0; width:100%; height:100%; border:0;
+}
+.pbi-placeholder{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; gap:12px; padding:64px 28px;
+  background:
+    linear-gradient(rgba(251,241,221,0.55), rgba(251,241,221,0.55)),
+    repeating-linear-gradient(135deg, transparent 0 12px, rgba(185,134,46,0.07) 12px 24px);
+}
+.pbi-ph-icon{
+  width:62px; height:62px; border-radius:14px; background:var(--panel);
+  border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+}
+.pbi-ph-icon svg{width:30px; height:30px;}
+.pbi-placeholder h4{font-size:20px; color:var(--ink);}
+.pbi-placeholder p{margin:0; max-width:430px; font-size:14.5px; color:var(--muted);}
+.pbi-placeholder .btn{margin-top:6px;}
+.pbi-note{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);
+  margin-top:12px; text-align:center;
+}
+@media (max-width:720px){
+  .pbi-frame.is-live{padding-bottom:95%;}
+  .pbi-placeholder{padding:44px 20px;}
+}
