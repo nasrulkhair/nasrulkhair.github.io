@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div id="readbar"></div>
+<div class="fab-wrap">
+  <button type="button" class="fab fab-top" id="fabTop" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+  <a class="fab fab-switch" href="learning-excel.html"><span class="fab-ico">→</span> <span class="fab-txt-long">Go to </span>Excel Module</a>
+</div>
 <nav class="topnav">
   <div class="wrap">
     <a class="brand" href="index.html"><span class="dot"></span>Nasrul Khair</a>
@@ -45,6 +50,31 @@
       </ol>
       <p class="toc-foot">Sections 01–08 cover analytical SQL. Sections 09–14 shift into data engineering, grounded on BigQuery / GCP.</p>
     </nav>
+
+    <div class="sqlpg" id="sqlpg">
+      <div class="sqlpg-head">
+        <span class="t"><span class="db">🗄️</span> Try it yourself — live SQL playground</span>
+        <span class="status" id="sqlpgStatus">Loading engine…</span>
+      </div>
+      <div class="sqlpg-body">
+        <p class="sqlpg-note">This runs a real SQLite database right in your browser — nothing is sent anywhere. Write a query, hit Run, and see the actual result. Great for practising the analytical sections (01–08). The engineering sections use BigQuery-only syntax, so run those in BigQuery instead.</p>
+        <div class="sqlpg-tables">Pre-loaded tables: <b>orders</b>(order_id, customer_id, region, amount, order_date) · <b>customers</b>(customer_id, customer_name) · <b>order_items</b>(order_id, product_id, quantity) · <b>product_revenue</b>(category, product_id, revenue)</div>
+        <textarea id="sqlpgInput" spellcheck="false">-- Try this, then edit it:
+SELECT region, COUNT(*) AS orders, SUM(amount) AS revenue
+FROM orders
+GROUP BY region
+ORDER BY revenue DESC;</textarea>
+        <div class="sqlpg-actions">
+          <button type="button" class="sqlpg-run" id="sqlpgRun" disabled>▶ Run query</button>
+          <button type="button" class="sqlpg-reset" id="sqlpgReset">Reset data</button>
+          <span class="sqlpg-hint">Ctrl/Cmd + Enter to run</span>
+        </div>
+        <div class="sqlpg-out">
+          <div class="sqlpg-msg" id="sqlpgMsg"></div>
+          <div class="sqlpg-result" id="sqlpgResult"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- 1 -->
     <section class="mod-sec" id="joins">
@@ -671,6 +701,152 @@ client = bigquery.Client(project=<span class="st">"proj"</span>)
         .catch(function(){});
     }, 700);
   });
+})();
+</script>
+<script>
+(function(){
+  var bar = document.getElementById("readbar");
+  var top = document.getElementById("fabTop");
+  function onScroll(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var height = h.scrollHeight - h.clientHeight;
+    var pct = height > 0 ? (scrolled / height) * 100 : 0;
+    if(bar) bar.style.width = pct + "%";
+    if(top){ if(scrolled > 400){ top.classList.add("show"); } else { top.classList.remove("show"); } }
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll);
+  onScroll();
+  if(top){ top.addEventListener("click", function(){ window.scrollTo({top:0, behavior:"smooth"}); }); }
+})();
+</script>
+<script>
+(function(){
+  var runBtn = document.getElementById("sqlpgRun");
+  var resetBtn = document.getElementById("sqlpgReset");
+  var input = document.getElementById("sqlpgInput");
+  var msg = document.getElementById("sqlpgMsg");
+  var resultBox = document.getElementById("sqlpgResult");
+  var statusEl = document.getElementById("sqlpgStatus");
+  if(!runBtn) return;
+
+  var db = null;
+
+  var SEED = [
+    "CREATE TABLE customers (customer_id INTEGER, customer_name TEXT);",
+    "INSERT INTO customers VALUES (1,'Aina'),(2,'Ben'),(3,'Carla'),(4,'Diego'),(5,'Ella');",
+    "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, region TEXT, amount REAL, order_date TEXT);",
+    "INSERT INTO orders VALUES " +
+      "(101,1,'North',420.00,'2025-01-05'),(102,2,'South',380.00,'2025-01-11'),"+
+      "(103,1,'North',510.00,'2025-02-02'),(104,3,'North',290.00,'2025-02-15'),"+
+      "(105,4,'West',470.00,'2025-03-01'),(106,5,'South',330.00,'2025-03-19'),"+
+      "(107,2,'South',610.00,'2025-04-04'),(108,3,'North',150.00,'2025-04-21'),"+
+      "(109,1,'North',880.00,'2025-05-09'),(110,4,'West',240.00,'2025-05-27');",
+    "CREATE TABLE order_items (order_id INTEGER, product_id TEXT, quantity INTEGER);",
+    "INSERT INTO order_items VALUES "+
+      "(101,'P1',3),(101,'P2',1),(102,'P1',5),(103,'P3',2),(104,'P2',4),"+
+      "(105,'P1',6),(106,'P3',1),(107,'P2',7),(108,'P1',2),(109,'P3',9),(110,'P2',3);",
+    "CREATE TABLE product_revenue (category TEXT, product_id TEXT, revenue REAL);",
+    "INSERT INTO product_revenue VALUES "+
+      "('Electronics','P1',9800),('Electronics','P2',7400),('Electronics','P3',7400),"+
+      "('Office','P4',3200),('Office','P5',5100),('Kitchen','P6',2600);"
+  ].join("\n");
+
+  function seed(){
+    db.run(SEED);
+  }
+
+  function showMsg(text, ok){
+    msg.className = "sqlpg-msg " + (ok ? "ok" : "err");
+    msg.textContent = text;
+  }
+  function clearResult(){
+    resultBox.className = "sqlpg-result";
+    resultBox.innerHTML = "";
+  }
+
+  function renderResult(res){
+    clearResult();
+    if(!res || res.length === 0){
+      // statement ran but returned no rows (e.g. CREATE/INSERT/UPDATE)
+      return;
+    }
+    var r = res[0];
+    var html = '<table class="sqlpg-tbl"><thead><tr>';
+    r.columns.forEach(function(c){ html += "<th>" + escapeHtml(c) + "</th>"; });
+    html += "</tr></thead><tbody>";
+    r.values.forEach(function(row){
+      html += "<tr>";
+      row.forEach(function(v){ html += "<td>" + escapeHtml(v === null ? "NULL" : String(v)) + "</td>"; });
+      html += "</tr>";
+    });
+    html += "</tbody></table>";
+    resultBox.innerHTML = html;
+    resultBox.className = "sqlpg-result show";
+  }
+  function escapeHtml(s){
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function runQuery(){
+    if(!db) return;
+    var sql = input.value.trim();
+    if(!sql){ showMsg("Type a query first.", false); clearResult(); return; }
+    try {
+      var res = db.exec(sql);
+      if(res && res.length){
+        var rows = res[0].values.length;
+        showMsg("Query successful — " + rows + " row" + (rows===1?"":"s") + " returned.", true);
+        renderResult(res);
+      } else {
+        showMsg("Query successful — statement executed (no rows returned).", true);
+        clearResult();
+      }
+    } catch(e){
+      showMsg("Query failed: " + e.message, false);
+      clearResult();
+    }
+  }
+
+  runBtn.addEventListener("click", runQuery);
+  input.addEventListener("keydown", function(e){
+    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); runQuery(); }
+  });
+  resetBtn.addEventListener("click", function(){
+    if(!db) return;
+    try {
+      ["orders","customers","order_items","product_revenue"].forEach(function(t){
+        db.run("DROP TABLE IF EXISTS " + t + ";");
+      });
+      seed();
+      showMsg("Sample data reset to its original state.", true);
+      clearResult();
+    } catch(e){ showMsg("Reset failed: " + e.message, false); }
+  });
+
+  // Load SQL.js from CDN
+  var s = document.createElement("script");
+  s.src = "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js";
+  s.onload = function(){
+    initSqlJs({ locateFile: function(f){ return "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/" + f; } })
+      .then(function(SQL){
+        db = new SQL.Database();
+        seed();
+        runBtn.disabled = false;
+        statusEl.textContent = "● Ready";
+        statusEl.className = "status ready";
+      })
+      .catch(function(err){
+        statusEl.textContent = "Engine failed to load";
+        showMsg("Couldn't load the SQL engine. Check your connection and refresh.", false);
+      });
+  };
+  s.onerror = function(){
+    statusEl.textContent = "Engine failed to load";
+    showMsg("Couldn't load the SQL engine (offline?). The playground needs an internet connection.", false);
+  };
+  document.head.appendChild(s);
 })();
 </script>
 </body>
