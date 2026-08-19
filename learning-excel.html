@@ -612,7 +612,12 @@ YoY %         := <span class="fn">DIVIDE</span>([Total Revenue]-[Revenue LY], [R
 
 <div class="pager"><a class="prev" href="learning-sql.html">← <span><span class="sub">Previous</span>SQL Module</span></a><div class="spacer"></div><a class="next" href="learning.html"><span><span class="sub">Next</span>Learning</span> →</a></div>
 </main>
-<footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p></div></footer>
+<footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p>
+    <div class="site-meta">
+      <span class="meta-item">👀 Visits: <img src="https://count.getloli.com/get/@nasrulkhair-github-io?theme=rule34" alt="visit counter" loading="lazy"></span>
+      <button type="button" class="like-btn" id="likeBtn"><span class="heart">🤍</span> <span class="lbl">Like this site</span> <span class="count" id="likeCount"></span></button>
+    </div>
+  </div></footer>
 <script>document.querySelectorAll('.year').forEach(function(y){y.textContent=new Date().getFullYear();});</script>
 <script>
   document.querySelectorAll('.mod-toggle').forEach(function(btn){
@@ -648,6 +653,42 @@ YoY %         := <span class="fn">DIVIDE</span>([Total Revenue]-[Revenue LY], [R
     try { document.execCommand('copy'); } catch(e){}
     document.body.removeChild(ta);
   }
+</script>
+<script>
+(function(){
+  // Fun like button — global count via a free counter service (no account, no backend).
+  var NS = "nasrulkhair-github-io-likes";
+  var btn = document.getElementById("likeBtn");
+  if(!btn) return;
+  var countEl = document.getElementById("likeCount");
+  var heart = btn.querySelector(".heart");
+  var lbl = btn.querySelector(".lbl");
+  var RED = String.fromCharCode(0x2764) + String.fromCharCode(0xFE0F);
+
+  var liked = false;
+  try { liked = localStorage.getItem(NS) === "1"; } catch(e){}
+  if(liked){ btn.classList.add("liked"); heart.textContent = RED; lbl.textContent = "Liked"; }
+
+  fetch("https://count.getloli.com/@" + NS + "?name=" + NS + "&json")
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if(d && typeof d.value === "number") countEl.textContent = "(" + d.value + ")"; })
+    .catch(function(){});
+
+  btn.addEventListener("click", function(){
+    if(liked) return;
+    liked = true;
+    try { localStorage.setItem(NS, "1"); } catch(e){}
+    btn.classList.add("liked"); heart.textContent = RED; lbl.textContent = "Liked";
+    var img = new Image();
+    img.src = "https://count.getloli.com/get/@" + NS + "?theme=moebooru&t=" + Date.now();
+    setTimeout(function(){
+      fetch("https://count.getloli.com/@" + NS + "?name=" + NS + "&json")
+        .then(function(r){ return r.json(); })
+        .then(function(d){ if(d && typeof d.value === "number") countEl.textContent = "(" + d.value + ")"; })
+        .catch(function(){});
+    }, 700);
+  });
+})();
 </script>
 </body>
 </html>
