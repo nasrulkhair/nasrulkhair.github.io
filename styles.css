@@ -592,3 +592,51 @@ ol.mod-steps>li strong{display:block; margin-bottom:2px; color:var(--ink);}
 @media (max-width:640px){
   .mod-toc ol{column-count:1;}
 }
+
+/* ============================================================
+   EXCEL-STYLE SAMPLE TABLES + COPY BUTTON  (appended)
+   ============================================================ */
+.xl-block{margin:16px 0;}
+.xl-bar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:#F3F2EE; border:1px solid var(--line); border-bottom:none;
+  border-radius:8px 8px 0 0; padding:7px 12px;
+}
+.xl-bar .xl-label{
+  font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted);
+  display:flex; align-items:center; gap:7px;
+}
+.xl-bar .xl-label .xl-grid-ico{width:13px; height:13px; display:inline-block; color:#1D6F42;}
+.xl-copy{
+  font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500;
+  border:1px solid var(--line); background:var(--panel); color:var(--accent-deep);
+  border-radius:6px; padding:5px 11px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  transition:border-color .18s ease, color .18s ease, background .18s ease;
+}
+.xl-copy:hover{border-color:var(--accent); background:var(--accent-soft);}
+.xl-copy.copied{border-color:#1D6F42; color:#1D6F42; background:#e7f2ea;}
+.xl-copy svg{width:13px; height:13px;}
+
+.xl-scroll{overflow-x:auto; border:1px solid var(--line); border-radius:0 0 8px 8px;}
+table.xl{border-collapse:collapse; width:100%; font-family:'IBM Plex Mono',monospace; font-size:12.5px; background:var(--panel);}
+/* column-letter header row (A, B, C…) */
+table.xl thead.xl-cols th{
+  background:#E8E6DF; color:var(--muted); font-weight:500; text-align:center;
+  border:1px solid #D2CDBF; padding:3px 10px; font-size:11px; min-width:64px;
+}
+table.xl thead.xl-cols th.xl-corner{background:#DAD6C8; width:34px; min-width:34px;}
+/* real header row (field names) */
+table.xl thead.xl-head th{
+  background:#F7F6F2; color:var(--ink); font-weight:600; text-align:left;
+  border:1px solid #D2CDBF; padding:6px 10px; font-family:'Inter',sans-serif; font-size:12.5px;
+}
+/* row-number gutter cell */
+table.xl td.xl-rn, table.xl thead.xl-head th.xl-rn{
+  background:#E8E6DF; color:var(--muted); text-align:center; font-size:11px;
+  border:1px solid #D2CDBF; width:34px; min-width:34px; font-weight:500;
+}
+table.xl tbody td{
+  border:1px solid #E3E0D6; padding:6px 10px; color:var(--ink); text-align:left; white-space:nowrap;
+}
+table.xl tbody tr:hover td{background:#FBF7EC;}
+table.xl tbody td.num{text-align:right;}

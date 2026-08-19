@@ -43,20 +43,41 @@
       <p class="toc-foot">Formula sections come with worked examples and drills. Power Query, Power Pivot, and VBA are desktop features, so those are step-by-step guides you follow inside Excel.</p>
     </nav>
 
+    <div class="mod-callout" style="margin-top:20px;">
+      <span class="tag">How to practice</span>
+      <p>Every sample table has a <strong>Copy for Excel</strong> button. Copy one, paste it straight into a blank sheet (it lands in the right columns automatically), then try writing the formulas yourself before you reveal the answers. Learning by typing beats reading every time.</p>
+    </div>
+
     <!-- 1 -->
     <section class="mod-sec" id="lookup">
       <div class="mod-num">01</div>
       <h2 class="mt">Lookup functions</h2>
       <p class="mod-sub">Find and retrieve values across tables. XLOOKUP is the modern standard; INDEX/MATCH is the universal fallback that works in every version.</p>
       <h3>Reference data — product prices</h3>
-      <div class="mod-table-wrap"><table class="mt">
-        <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr>
-        <tr><td>Laptop</td><td>Electronics</td><td>999</td><td>12</td></tr>
-        <tr><td>Desk</td><td>Furniture</td><td>210</td><td>30</td></tr>
-        <tr><td>Blender</td><td>Kitchen</td><td>65</td><td>8</td></tr>
-        <tr><td>Notebook</td><td>Office</td><td>4.5</td><td>240</td></tr>
-        <tr><td>Monitor</td><td>Electronics</td><td>280</td><td>17</td></tr>
-      </table></div>
+      <div class="xl-block">
+  <div class="xl-bar">
+    <span class="xl-label"><svg class="xl-grid-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Sheet1 — product prices</span>
+    <button class="xl-copy" data-tsv="Product	Category	Price	Stock
+Laptop	Electronics	999	12
+Desk	Furniture	210	30
+Blender	Kitchen	65	8
+Notebook	Office	4.5	240
+Monitor	Electronics	280	17"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="lbl">Copy for Excel</span></button>
+  </div>
+  <div class="xl-scroll">
+    <table class="xl">
+      <thead class="xl-cols"><tr><th class="xl-corner"></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+      <thead class="xl-head"><tr><th class="xl-rn">5</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead>
+      <tbody>
+        <tr><td class="xl-rn">6</td><td>Laptop</td><td>Electronics</td><td class="num">999</td><td class="num">12</td></tr>
+        <tr><td class="xl-rn">7</td><td>Desk</td><td>Furniture</td><td class="num">210</td><td class="num">30</td></tr>
+        <tr><td class="xl-rn">8</td><td>Blender</td><td>Kitchen</td><td class="num">65</td><td class="num">8</td></tr>
+        <tr><td class="xl-rn">9</td><td>Notebook</td><td>Office</td><td class="num">4.5</td><td class="num">240</td></tr>
+        <tr><td class="xl-rn">10</td><td>Monitor</td><td>Electronics</td><td class="num">280</td><td class="num">17</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
       <h3>XLOOKUP — the modern lookup</h3>
       <p>Looks in any direction, returns errors gracefully, no column-counting. <code class="ic">=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])</code></p>
       <div class="mod-table-wrap"><table class="mt">
@@ -99,14 +120,30 @@
       <h2 class="mt">Logic &amp; conditional aggregation</h2>
       <p class="mod-sub">IF / IFS for decisions · SUMIFS, COUNTIFS, AVERAGEIFS for criteria-based totals · SUMPRODUCT for weighted math.</p>
       <h3>Sample data — quarterly sales by rep</h3>
-      <div class="mod-table-wrap"><table class="mt">
-        <tr><th>Rep</th><th>Region</th><th>Q Sales</th><th>Target</th><th>Bonus?</th></tr>
-        <tr><td>Alice</td><td>North</td><td>42000</td><td>40000</td><td>Yes</td></tr>
-        <tr><td>Ben</td><td>South</td><td>38000</td><td>40000</td><td>No</td></tr>
-        <tr><td>Carla</td><td>North</td><td>51000</td><td>45000</td><td>Yes</td></tr>
-        <tr><td>Diego</td><td>West</td><td>29000</td><td>35000</td><td>No</td></tr>
-        <tr><td>Ella</td><td>South</td><td>47000</td><td>45000</td><td>Yes</td></tr>
-      </table></div>
+      <div class="xl-block">
+  <div class="xl-bar">
+    <span class="xl-label"><svg class="xl-grid-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Sheet1 — quarterly sales</span>
+    <button class="xl-copy" data-tsv="Rep	Region	Q Sales	Target	Bonus?
+Alice	North	42000	40000	Yes
+Ben	South	38000	40000	No
+Carla	North	51000	45000	Yes
+Diego	West	29000	35000	No
+Ella	South	47000	45000	Yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="lbl">Copy for Excel</span></button>
+  </div>
+  <div class="xl-scroll">
+    <table class="xl">
+      <thead class="xl-cols"><tr><th class="xl-corner"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+      <thead class="xl-head"><tr><th class="xl-rn">5</th><th>Rep</th><th>Region</th><th>Q Sales</th><th>Target</th><th>Bonus?</th></tr></thead>
+      <tbody>
+        <tr><td class="xl-rn">6</td><td>Alice</td><td>North</td><td class="num">42000</td><td class="num">40000</td><td>Yes</td></tr>
+        <tr><td class="xl-rn">7</td><td>Ben</td><td>South</td><td class="num">38000</td><td class="num">40000</td><td>No</td></tr>
+        <tr><td class="xl-rn">8</td><td>Carla</td><td>North</td><td class="num">51000</td><td class="num">45000</td><td>Yes</td></tr>
+        <tr><td class="xl-rn">9</td><td>Diego</td><td>West</td><td class="num">29000</td><td class="num">35000</td><td>No</td></tr>
+        <tr><td class="xl-rn">10</td><td>Ella</td><td>South</td><td class="num">47000</td><td class="num">45000</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
       <h3>Live examples</h3>
       <div class="mod-table-wrap"><table class="mt">
         <tr><th>What it does</th><th>Formula</th><th>Result</th></tr>
@@ -141,12 +178,26 @@
       <h2 class="mt">Text &amp; date functions</h2>
       <p class="mod-sub">Clean, split and join text · calculate durations and working days · reshape strings into data.</p>
       <h3>Sample data</h3>
-      <div class="mod-table-wrap"><table class="mt">
-        <tr><th>Full Name</th><th>Email</th><th>Hire Date</th></tr>
-        <tr><td>Alice Wong</td><td>alice.wong@acme.com</td><td>2021-03-15</td></tr>
-        <tr><td>Ben Carter</td><td>ben.carter@acme.com</td><td>2019-11-02</td></tr>
-        <tr><td>Carla Diaz</td><td>carla.diaz@acme.com</td><td>2022-07-20</td></tr>
-      </table></div>
+      <div class="xl-block">
+  <div class="xl-bar">
+    <span class="xl-label"><svg class="xl-grid-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Sheet1 — employees</span>
+    <button class="xl-copy" data-tsv="Full Name	Email	Hire Date
+Alice Wong	alice.wong@acme.com	2021-03-15
+Ben Carter	ben.carter@acme.com	2019-11-02
+Carla Diaz	carla.diaz@acme.com	2022-07-20"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="lbl">Copy for Excel</span></button>
+  </div>
+  <div class="xl-scroll">
+    <table class="xl">
+      <thead class="xl-cols"><tr><th class="xl-corner"></th><th>A</th><th>B</th><th>C</th></tr></thead>
+      <thead class="xl-head"><tr><th class="xl-rn">5</th><th>Full Name</th><th>Email</th><th>Hire Date</th></tr></thead>
+      <tbody>
+        <tr><td class="xl-rn">6</td><td>Alice Wong</td><td>alice.wong@acme.com</td><td>2021-03-15</td></tr>
+        <tr><td class="xl-rn">7</td><td>Ben Carter</td><td>ben.carter@acme.com</td><td>2019-11-02</td></tr>
+        <tr><td class="xl-rn">8</td><td>Carla Diaz</td><td>carla.diaz@acme.com</td><td>2022-07-20</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
       <h3>Live examples</h3>
       <p>Dates are just numbers — subtract them, or use DATEDIF / NETWORKDAYS. Newer TEXTBEFORE/TEXTSPLIT make delimited data easy.</p>
       <div class="mod-table-wrap"><table class="mt">
@@ -184,15 +235,32 @@
       <h2 class="mt">Dynamic arrays</h2>
       <p class="mod-sub">One formula, many results that "spill". FILTER · SORT · UNIQUE · SEQUENCE · the spill operator (#). Excel 365 / 2021.</p>
       <h3>Sample data</h3>
-      <div class="mod-table-wrap"><table class="mt">
-        <tr><th>Rep</th><th>Region</th><th>Sales</th></tr>
-        <tr><td>Alice</td><td>North</td><td>42000</td></tr>
-        <tr><td>Ben</td><td>South</td><td>38000</td></tr>
-        <tr><td>Carla</td><td>North</td><td>51000</td></tr>
-        <tr><td>Diego</td><td>West</td><td>29000</td></tr>
-        <tr><td>Ella</td><td>South</td><td>47000</td></tr>
-        <tr><td>Frank</td><td>North</td><td>33000</td></tr>
-      </table></div>
+      <div class="xl-block">
+  <div class="xl-bar">
+    <span class="xl-label"><svg class="xl-grid-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Sheet1 — sales by rep</span>
+    <button class="xl-copy" data-tsv="Rep	Region	Sales
+Alice	North	42000
+Ben	South	38000
+Carla	North	51000
+Diego	West	29000
+Ella	South	47000
+Frank	North	33000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="lbl">Copy for Excel</span></button>
+  </div>
+  <div class="xl-scroll">
+    <table class="xl">
+      <thead class="xl-cols"><tr><th class="xl-corner"></th><th>A</th><th>B</th><th>C</th></tr></thead>
+      <thead class="xl-head"><tr><th class="xl-rn">5</th><th>Rep</th><th>Region</th><th>Sales</th></tr></thead>
+      <tbody>
+        <tr><td class="xl-rn">6</td><td>Alice</td><td>North</td><td class="num">42000</td></tr>
+        <tr><td class="xl-rn">7</td><td>Ben</td><td>South</td><td class="num">38000</td></tr>
+        <tr><td class="xl-rn">8</td><td>Carla</td><td>North</td><td class="num">51000</td></tr>
+        <tr><td class="xl-rn">9</td><td>Diego</td><td>West</td><td class="num">29000</td></tr>
+        <tr><td class="xl-rn">10</td><td>Ella</td><td>South</td><td class="num">47000</td></tr>
+        <tr><td class="xl-rn">11</td><td>Frank</td><td>North</td><td class="num">33000</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
       <h3>Live examples (results spill downward)</h3>
       <p>A dynamic array returns many values from one cell — they spill into the cells below or right. Reference a spill range with its top cell + <code class="ic">#</code> (e.g. <code class="ic">E6#</code>).</p>
       <div class="mod-table-wrap"><table class="mt">
@@ -556,6 +624,30 @@ YoY %         := <span class="fn">DIVIDE</span>([Total Revenue]-[Revenue LY], [R
       else { ans.style.maxHeight = '0'; label.textContent = 'Show answer'; }
     });
   });
+
+  // Copy sample tables as TSV so they paste cleanly into Excel columns
+  document.querySelectorAll('.xl-copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var tsv = btn.getAttribute('data-tsv');
+      var lbl = btn.querySelector('.lbl');
+      var original = lbl.textContent;
+      function done(){
+        btn.classList.add('copied');
+        lbl.textContent = 'Copied ✓';
+        setTimeout(function(){ btn.classList.remove('copied'); lbl.textContent = original; }, 1800);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(tsv).then(done).catch(function(){ fallback(tsv); done(); });
+      } else { fallback(tsv); done(); }
+    });
+  });
+  function fallback(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
 </script>
 </body>
 </html>
