@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel Module | Nasrul Khair</title>
+<meta name="description" content="Excel learning module by Nasrul Khair — intermediate to advanced, from lookups and dynamic arrays to Power Query, Power Pivot, DAX, and VBA.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="dot"></span>Nasrul Khair</a>
+    <div class="links"><a href="index.html">Home</a><a href="about.html">About</a><a href="experience.html">Experience</a><a href="projects.html">Projects</a><a href="extra.html">Extra Work</a><a href="learning.html" class="active">Learning</a><a href="certifications.html">Certifications</a><a href="skills.html">Skills</a><a href="contact.html">Contact</a></div>
+  </div>
+</nav>
+<main>
+
+<section class="page-section">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="page-eyebrow"><span class="idx">XL</span> Learning Module</div>
+      <h1>Excel — Intermediate to Advanced</h1>
+      <p class="lead">The functions and tools that carry real analytical work — lookups, conditional logic, dynamic arrays, LAMBDA, plus desktop guides for Power Query, Power Pivot, PivotTables, and VBA. Read the notes, study the live formulas, then test yourself.</p>
+    </div>
+
+    <nav class="mod-toc">
+      <h2>What's inside</h2>
+      <ol>
+        <li><a href="#lookup">Lookup functions</a></li>
+        <li><a href="#logic">Logic &amp; conditional aggregation</a></li>
+        <li><a href="#text">Text &amp; date functions</a></li>
+        <li><a href="#arrays">Dynamic arrays</a></li>
+        <li><a href="#lambda">LAMBDA &amp; LET</a></li>
+        <li><a href="#pq">Power Query</a></li>
+        <li><a href="#pp">Power Pivot &amp; DAX</a></li>
+        <li><a href="#pivot">PivotTables</a></li>
+        <li><a href="#valid">Validation &amp; formatting</a></li>
+        <li><a href="#vba">VBA &amp; macros</a></li>
+        <li><a href="#ref">Function cheat sheet</a></li>
+      </ol>
+      <p class="toc-foot">Formula sections come with worked examples and drills. Power Query, Power Pivot, and VBA are desktop features, so those are step-by-step guides you follow inside Excel.</p>
+    </nav>
+
+    <!-- 1 -->
+    <section class="mod-sec" id="lookup">
+      <div class="mod-num">01</div>
+      <h2 class="mt">Lookup functions</h2>
+      <p class="mod-sub">Find and retrieve values across tables. XLOOKUP is the modern standard; INDEX/MATCH is the universal fallback that works in every version.</p>
+      <h3>Reference data — product prices</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr>
+        <tr><td>Laptop</td><td>Electronics</td><td>999</td><td>12</td></tr>
+        <tr><td>Desk</td><td>Furniture</td><td>210</td><td>30</td></tr>
+        <tr><td>Blender</td><td>Kitchen</td><td>65</td><td>8</td></tr>
+        <tr><td>Notebook</td><td>Office</td><td>4.5</td><td>240</td></tr>
+        <tr><td>Monitor</td><td>Electronics</td><td>280</td><td>17</td></tr>
+      </table></div>
+      <h3>XLOOKUP — the modern lookup</h3>
+      <p>Looks in any direction, returns errors gracefully, no column-counting. <code class="ic">=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])</code></p>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th><th>Result</th></tr>
+        <tr><td>Price of 'Blender'</td><td class="f">=XLOOKUP("Blender",A6:A10,C6:C10)</td><td class="r">65</td></tr>
+        <tr><td>Price, safe if missing</td><td class="f">=XLOOKUP("Router",A6:A10,C6:C10,"Not found")</td><td class="r">Not found</td></tr>
+        <tr><td>Category of 'Monitor'</td><td class="f">=XLOOKUP("Monitor",A6:A10,B6:B10)</td><td class="r">Electronics</td></tr>
+        <tr><td>Return whole row (spills)</td><td class="f">=XLOOKUP("Desk",A6:A10,B6:D10)</td><td class="r">Furniture, 210, 30</td></tr>
+      </table></div>
+      <h3>INDEX + MATCH — works everywhere</h3>
+      <p><code class="ic">INDEX(return_range, MATCH(lookup_value, lookup_range, 0))</code> — MATCH finds the position, INDEX returns the value there.</p>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th><th>Result</th></tr>
+        <tr><td>Price of 'Laptop'</td><td class="f">=INDEX(C6:C10,MATCH("Laptop",A6:A10,0))</td><td class="r">999</td></tr>
+        <tr><td>Stock of 'Notebook'</td><td class="f">=INDEX(D6:D10,MATCH("Notebook",A6:A10,0))</td><td class="r">240</td></tr>
+        <tr><td>Two-way (Desk / Price)</td><td class="f">=INDEX(A6:D10,MATCH("Desk",A6:A10,0),MATCH("Price",A5:D5,0))</td><td class="r">210</td></tr>
+      </table></div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">★</span><span>Your turn: price of 'Monitor' with XLOOKUP, and stock of 'Desk' with INDEX/MATCH.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p><code class="ic">=XLOOKUP("Monitor",A6:A10,C6:C10)</code> → 280</p>
+          <p><code class="ic">=INDEX(D6:D10,MATCH("Desk",A6:A10,0))</code> → 30</p>
+        </div></div>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">⚠ Common mistakes</span>
+        <ul>
+          <li>VLOOKUP defaults to <strong>approximate</strong> match — always add FALSE (or 0) as the last argument for exact match.</li>
+          <li>VLOOKUP only looks rightward from its key column. XLOOKUP and INDEX/MATCH look any direction.</li>
+          <li>MATCH needs a 0 as its third argument for exact match; omit it and unsorted data returns wrong results.</li>
+          <li>Text vs number mismatch (lookup value text, table numbers) fails silently — check with ISNUMBER.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="mod-sec" id="logic">
+      <div class="mod-num">02</div>
+      <h2 class="mt">Logic &amp; conditional aggregation</h2>
+      <p class="mod-sub">IF / IFS for decisions · SUMIFS, COUNTIFS, AVERAGEIFS for criteria-based totals · SUMPRODUCT for weighted math.</p>
+      <h3>Sample data — quarterly sales by rep</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Rep</th><th>Region</th><th>Q Sales</th><th>Target</th><th>Bonus?</th></tr>
+        <tr><td>Alice</td><td>North</td><td>42000</td><td>40000</td><td>Yes</td></tr>
+        <tr><td>Ben</td><td>South</td><td>38000</td><td>40000</td><td>No</td></tr>
+        <tr><td>Carla</td><td>North</td><td>51000</td><td>45000</td><td>Yes</td></tr>
+        <tr><td>Diego</td><td>West</td><td>29000</td><td>35000</td><td>No</td></tr>
+        <tr><td>Ella</td><td>South</td><td>47000</td><td>45000</td><td>Yes</td></tr>
+      </table></div>
+      <h3>Live examples</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th><th>Result</th></tr>
+        <tr><td>Grade Alice's sales (IFS)</td><td class="f">=IFS(C6&gt;=50000,"A",C6&gt;=40000,"B",TRUE,"C")</td><td class="r">B</td></tr>
+        <tr><td>Total sales, North</td><td class="f">=SUMIFS(C6:C10,B6:B10,"North")</td><td class="r">93000</td></tr>
+        <tr><td>Count reps over target</td><td class="f">=COUNTIFS(C6:C10,"&gt;=45000")</td><td class="r">2</td></tr>
+        <tr><td>Avg sales in South</td><td class="f">=AVERAGEIFS(C6:C10,B6:B10,"South")</td><td class="r">42500</td></tr>
+        <tr><td>Weighted total</td><td class="f">=SUMPRODUCT(C6:C10,D6:D10)/SUM(D6:D10)</td><td class="r">42073.17</td></tr>
+      </table></div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">★</span><span>Your turn: total sales for North, and count of reps with sales ≥ 40000.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p><code class="ic">=SUMIFS(C6:C10,B6:B10,"North")</code> → 93000</p>
+          <p><code class="ic">=COUNTIFS(C6:C10,"&gt;=40000")</code> → 3</p>
+        </div></div>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">⚠ Common mistakes</span>
+        <ul>
+          <li>SUMIFS puts the sum range <strong>first</strong>; SUMIF puts it <strong>last</strong>. Mixing them up is the #1 error.</li>
+          <li>Criteria with operators must be quoted: <code class="ic">"&gt;=45000"</code>. Combine with a cell via <code class="ic">"&gt;="&amp;B1</code>.</li>
+          <li>Every criteria range in SUMIFS/COUNTIFS must be the same size, or you get a VALUE error.</li>
+          <li>IFS has no built-in else — add TRUE as the final condition or you'll get an N/A error.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="mod-sec" id="text">
+      <div class="mod-num">03</div>
+      <h2 class="mt">Text &amp; date functions</h2>
+      <p class="mod-sub">Clean, split and join text · calculate durations and working days · reshape strings into data.</p>
+      <h3>Sample data</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Full Name</th><th>Email</th><th>Hire Date</th></tr>
+        <tr><td>Alice Wong</td><td>alice.wong@acme.com</td><td>2021-03-15</td></tr>
+        <tr><td>Ben Carter</td><td>ben.carter@acme.com</td><td>2019-11-02</td></tr>
+        <tr><td>Carla Diaz</td><td>carla.diaz@acme.com</td><td>2022-07-20</td></tr>
+      </table></div>
+      <h3>Live examples</h3>
+      <p>Dates are just numbers — subtract them, or use DATEDIF / NETWORKDAYS. Newer TEXTBEFORE/TEXTSPLIT make delimited data easy.</p>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th><th>Result</th></tr>
+        <tr><td>First name (before space)</td><td class="f">=LEFT(A6,FIND(" ",A6)-1)</td><td class="r">Alice</td></tr>
+        <tr><td>Last name (after space)</td><td class="f">=MID(A6,FIND(" ",A6)+1,50)</td><td class="r">Wong</td></tr>
+        <tr><td>Username (before @)</td><td class="f">=TEXTBEFORE(B6,"@")</td><td class="r">alice.wong</td></tr>
+        <tr><td>Join name + email</td><td class="f">=TEXTJOIN(" | ",TRUE,A6,B6)</td><td class="r">Alice Wong | alice…</td></tr>
+        <tr><td>Years of service</td><td class="f">=DATEDIF(C6,TODAY(),"Y")</td><td class="r">5</td></tr>
+        <tr><td>Working days since hire</td><td class="f">=NETWORKDAYS(C6,TODAY())</td><td class="r">~1410</td></tr>
+        <tr><td>Month-end of hire date</td><td class="f">=EOMONTH(C6,0)</td><td class="r">2021-03-31</td></tr>
+      </table></div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">★</span><span>Your turn: username from Ben's email, and years of service for Carla.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p><code class="ic">=TEXTBEFORE(B7,"@")</code> → ben.carter</p>
+          <p><code class="ic">=DATEDIF(C8,TODAY(),"Y")</code> → 4 (as of build date)</p>
+        </div></div>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">⚠ Common mistakes</span>
+        <ul>
+          <li>Dates that won't do math are probably <strong>text</strong> — left-aligned by default. Fix with DATEVALUE or Text-to-Columns.</li>
+          <li>FIND is case-sensitive; SEARCH is not. Pick deliberately.</li>
+          <li>DATEDIF is quirky — the "MD" unit can give wrong results; prefer "Y", "M", or "D".</li>
+          <li>TEXTBEFORE / TEXTSPLIT are 365-only. On older Excel use LEFT/MID with FIND.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="mod-sec" id="arrays">
+      <div class="mod-num">04</div>
+      <h2 class="mt">Dynamic arrays</h2>
+      <p class="mod-sub">One formula, many results that "spill". FILTER · SORT · UNIQUE · SEQUENCE · the spill operator (#). Excel 365 / 2021.</p>
+      <h3>Sample data</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Rep</th><th>Region</th><th>Sales</th></tr>
+        <tr><td>Alice</td><td>North</td><td>42000</td></tr>
+        <tr><td>Ben</td><td>South</td><td>38000</td></tr>
+        <tr><td>Carla</td><td>North</td><td>51000</td></tr>
+        <tr><td>Diego</td><td>West</td><td>29000</td></tr>
+        <tr><td>Ella</td><td>South</td><td>47000</td></tr>
+        <tr><td>Frank</td><td>North</td><td>33000</td></tr>
+      </table></div>
+      <h3>Live examples (results spill downward)</h3>
+      <p>A dynamic array returns many values from one cell — they spill into the cells below or right. Reference a spill range with its top cell + <code class="ic">#</code> (e.g. <code class="ic">E6#</code>).</p>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th><th>Spills to</th></tr>
+        <tr><td>Unique regions</td><td class="f">=UNIQUE(B6:B11)</td><td class="r">North, South, West</td></tr>
+        <tr><td>Reps in North only</td><td class="f">=FILTER(A6:A11,B6:B11="North")</td><td class="r">Alice, Carla, Frank</td></tr>
+        <tr><td>Sales sorted high→low</td><td class="f">=SORT(C6:C11,1,-1)</td><td class="r">51000, 47000, …</td></tr>
+        <tr><td>Numbers 1..5</td><td class="f">=SEQUENCE(5)</td><td class="r">1, 2, 3, 4, 5</td></tr>
+        <tr><td>Top 3 sales</td><td class="f">=TAKE(SORT(C6:C11,1,-1),3)</td><td class="r">51000, 47000, 42000</td></tr>
+      </table></div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">★</span><span>Your turn: list reps in South, and a unique list of regions.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p><code class="ic">=FILTER(A6:A11,B6:B11="South")</code> → Ben, Ella</p>
+          <p><code class="ic">=UNIQUE(B6:B11)</code> → North, South, West</p>
+        </div></div>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">⚠ Common mistakes</span>
+        <ul>
+          <li>A SPILL error means something blocks the spill range — clear the cells below/right.</li>
+          <li>Reference a whole spilled range with the # operator (<code class="ic">E6#</code>); don't hard-code the size.</li>
+          <li>These are Excel 365 / 2021 only. Older versions return a NAME error.</li>
+          <li>Don't wrap a dynamic array inside a Table — Tables don't allow spilling. Use a normal range.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="mod-sec" id="lambda">
+      <div class="mod-num">05</div>
+      <h2 class="mt">LAMBDA &amp; LET</h2>
+      <p class="mod-sub">Build your own reusable functions. LET names intermediate steps; LAMBDA turns a formula into a callable function; MAP/REDUCE/BYROW iterate.</p>
+      <h3>LET — readable formulas</h3>
+      <p><code class="ic">LET(name1,value1, name2,value2, …, calculation)</code> — define variables once, reuse them, make formulas readable and faster.</p>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th><th>Result</th></tr>
+        <tr><td>10% off + 8% tax</td><td class="f">=LET(p,100, disc,p*0.9, disc*1.08)</td><td class="r">97.2</td></tr>
+        <tr><td>Circle area (r=5)</td><td class="f">=LET(r,5, PI()*r^2)</td><td class="r">78.54</td></tr>
+      </table></div>
+      <h3>LAMBDA — custom functions</h3>
+      <p><code class="ic">LAMBDA(param1,param2, calculation)</code> defines a function. Name it in Name Manager (Formulas ▸ Name Manager) to reuse it everywhere.</p>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Named function</th><th>Definition</th><th>Call it like</th></tr>
+        <tr><td>ToFahrenheit</td><td class="f">=LAMBDA(c, c*9/5+32)</td><td class="r">=ToFahrenheit(100) → 212</td></tr>
+        <tr><td>Commission</td><td class="f">=LAMBDA(sales,rate, sales*rate)</td><td class="r">=Commission(50000,0.05) → 2500</td></tr>
+        <tr><td>FullName</td><td class="f">=LAMBDA(first,last, first&amp;" "&amp;last)</td><td class="r">=FullName("Ada","Lovelace")</td></tr>
+      </table></div>
+      <h3>MAP / BYROW / REDUCE — iterate a LAMBDA</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>What it does</th><th>Formula</th></tr>
+        <tr><td>Add 10% to each of 1..5</td><td class="f">=MAP(SEQUENCE(5),LAMBDA(x,x*1.1))</td></tr>
+        <tr><td>Sum via REDUCE</td><td class="f">=REDUCE(0,SEQUENCE(5),LAMBDA(acc,x,acc+x))</td></tr>
+        <tr><td>Row totals (BYROW)</td><td class="f">=BYROW(A1:C3,LAMBDA(r,SUM(r)))</td></tr>
+      </table></div>
+      <div class="mod-callout">
+        <span class="tag">Practice</span>
+        <p>In Name Manager, create <code class="ic">Discount = LAMBDA(price,pct, price*(1-pct))</code>, then call <code class="ic">=Discount(200,0.15)</code>. You should get 170.</p>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">⚠ Common mistakes</span>
+        <ul>
+          <li>A LAMBDA must be saved in Name Manager before you can call it by name across the sheet.</li>
+          <li>In LET, define a name <strong>before</strong> you use it — order matters, left to right.</li>
+          <li>The final argument of LET is the calculation (no name) — forgetting it is common.</li>
+          <li>LAMBDA/LET are 365 / 2021 only. Keep names short or the formula gets hard to debug.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="mod-sec" id="pq">
+      <div class="mod-num">06</div>
+      <h2 class="mt">Power Query</h2>
+      <p class="mod-sub">Import data from anywhere, clean it with recorded steps, and refresh with one click. A desktop guide — follow it in Excel using the Practice Dataset.</p>
+      <div class="mod-callout">
+        <span class="tag">The idea</span>
+        <p>Power Query records every cleaning step as a repeatable script (the "Applied Steps"). When source data changes, hit Refresh and all steps re-run — no manual re-cleaning, ever. It lives at Data ▸ Get &amp; Transform Data.</p>
+      </div>
+      <h3>Getting started</h3>
+      <ol class="mod-steps">
+        <li><strong>Load the table</strong> Click any cell in the 'Sales' table ▸ Data ▸ From Table/Range. The Power Query Editor opens.</li>
+        <li><strong>Applied Steps</strong> Every action appears on the right. Click a step to see the table at that point; delete a step with ✕ to undo it.</li>
+        <li><strong>Set data types</strong> Select a column ▸ set type via the ABC/123 icon. Correct types prevent downstream errors.</li>
+      </ol>
+      <h3>Core transformations</h3>
+      <ul class="mod-notes">
+        <li><strong>Remove / keep columns</strong> — right-click a header ▸ Remove, or select the keepers ▸ Remove Other Columns.</li>
+        <li><strong>Filter rows</strong> — the column ▼ dropdown, or Number/Text/Date Filters.</li>
+        <li><strong>Split column</strong> — Home ▸ Split Column ▸ By Delimiter. Turns 'Smith, John' into two columns.</li>
+        <li><strong>Custom column</strong> — Add Column ▸ Custom Column, e.g. <code class="ic">= [Qty] * [UnitPrice]</code>.</li>
+        <li><strong>Group By</strong> — Home ▸ Group By: group by Region, aggregate Sum of Revenue. Like a PivotTable but as a step.</li>
+        <li><strong>Unpivot</strong> — select value-in-header columns (Jan, Feb, Mar) ▸ right-click ▸ Unpivot. Wide becomes tidy long data.</li>
+      </ul>
+      <h3>Combining queries</h3>
+      <ul class="mod-notes">
+        <li><strong>Merge (like VLOOKUP/JOIN)</strong> — Home ▸ Merge Queries. Pick a key column in each and a join kind.</li>
+        <li><strong>Append (stack tables)</strong> — Home ▸ Append Queries. Stacks rows of same-column tables, e.g. 12 monthly files.</li>
+        <li><strong>Combine a folder</strong> — Data ▸ Get Data ▸ From File ▸ From Folder. Add a file → Refresh → included automatically.</li>
+      </ul>
+      <div class="mod-callout">
+        <span class="tag">Practice</span>
+        <p>Load 'Sales' → filter Revenue &gt; 1000 → Group By Region with Sum of Revenue → Close &amp; Load to a new sheet. Change a source value and Refresh to watch it update.</p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="mod-sec" id="pp">
+      <div class="mod-num">07</div>
+      <h2 class="mt">Power Pivot &amp; DAX</h2>
+      <p class="mod-sub">Handle millions of rows across related tables and write DAX measures. The engine behind serious Excel analytics.</p>
+      <h3>Concepts</h3>
+      <ul class="mod-notes">
+        <li><strong>Data Model</strong> — an in-memory database inside your workbook. Tables can be related, so no giant flat sheet or endless VLOOKUPs.</li>
+        <li><strong>Star schema</strong> — one central 'fact' table linked to 'dimension' tables (Calendar, Products, Regions). Keeps models fast and clean.</li>
+        <li><strong>Enable it</strong> — File ▸ Options ▸ Add-ins ▸ COM Add-ins ▸ tick 'Microsoft Power Pivot for Excel'.</li>
+      </ul>
+      <h3>Building the model</h3>
+      <ol class="mod-steps">
+        <li><strong>Add tables</strong> Load to the model via Power Query (Close &amp; Load To ▸ Add to Data Model) or Power Pivot ▸ Add to Data Model.</li>
+        <li><strong>Create relationships</strong> Power Pivot ▸ Manage ▸ Diagram View. Drag a key field to the matching key in another table. One-to-many is typical.</li>
+        <li><strong>A Calendar table</strong> Add a dedicated date table and mark it (Design ▸ Mark as Date Table). Required for time-intelligence DAX.</li>
+      </ol>
+      <h3>DAX measures</h3>
+      <p>Measures calculate at the moment of use, respecting whatever filters the PivotTable applies.</p>
+      <pre><code><span class="cm">-- core measures</span>
+Total Revenue := <span class="fn">SUMX</span>(Sales, Sales[Qty] * Sales[UnitPrice])
+Total Qty     := <span class="fn">SUM</span>(Sales[Qty])
+Avg Order     := <span class="fn">DIVIDE</span>([Total Revenue], <span class="fn">DISTINCTCOUNT</span>(Sales[OrderID]))
+
+<span class="cm">-- time intelligence (needs a marked Calendar table)</span>
+Revenue YTD   := <span class="fn">TOTALYTD</span>([Total Revenue], Calendar[Date])
+Revenue LY    := <span class="fn">CALCULATE</span>([Total Revenue], <span class="fn">SAMEPERIODLASTYEAR</span>(Calendar[Date]))
+YoY %         := <span class="fn">DIVIDE</span>([Total Revenue]-[Revenue LY], [Revenue LY])</code></pre>
+      <div class="mod-callout">
+        <span class="tag">Key functions</span>
+        <ul>
+          <li><strong>CALCULATE</strong> — the most important DAX function; changes the filter context of a calculation.</li>
+          <li><strong>SUMX / AVERAGEX</strong> — iterators: evaluate an expression row-by-row, then aggregate.</li>
+          <li><strong>DIVIDE</strong> — safe division; returns blank instead of a divide-by-zero error.</li>
+          <li><strong>RELATED</strong> — pull a column from a related table, like a lookup across the relationship.</li>
+        </ul>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">Practice</span>
+        <p>Add 'Sales' to the Data Model, create the Total Revenue measure, build a PivotTable of Revenue by Region and Category, then add a YoY % measure using a Calendar table.</p>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="mod-sec" id="pivot">
+      <div class="mod-num">08</div>
+      <h2 class="mt">PivotTables</h2>
+      <p class="mod-sub">Summarize thousands of rows in seconds by dragging fields. The fastest way to explore data.</p>
+      <h3>Basics</h3>
+      <ul class="mod-notes">
+        <li><strong>Create one</strong> — click inside the 'Sales' table ▸ Insert ▸ PivotTable ▸ New Worksheet.</li>
+        <li><strong>The four areas</strong> — Rows (categories down the side), Columns (across the top), Values (the numbers), Filters (page-level).</li>
+        <li><strong>Change the math</strong> — click a Values field ▸ Value Field Settings ▸ Sum, Count, Average, Max.</li>
+        <li><strong>Show values as</strong> — Value Field Settings ▸ Show Values As ▸ % of Grand Total, % of Column, Running Total, Rank.</li>
+      </ul>
+      <h3>Organizing</h3>
+      <ul class="mod-notes">
+        <li><strong>Group dates</strong> — right-click a date in Rows ▸ Group ▸ Months/Quarters/Years.</li>
+        <li><strong>Group numbers</strong> — right-click a number field ▸ Group ▸ set bin size (e.g. Revenue into 0–500, 500–1000…).</li>
+        <li><strong>Sort &amp; Top N</strong> — Row Labels ▼ ▸ Value Filters ▸ Top 10.</li>
+        <li><strong>Layout</strong> — Design ▸ Report Layout ▸ Tabular Form for a clean database-style look.</li>
+      </ul>
+      <h3>Interactivity</h3>
+      <ul class="mod-notes">
+        <li><strong>Slicers</strong> — PivotTable Analyze ▸ Insert Slicer. Connect one to several pivots via Report Connections.</li>
+        <li><strong>Timeline</strong> — Insert Timeline for a date slider.</li>
+        <li><strong>Calculated Field</strong> — Fields, Items &amp; Sets ▸ Calculated Field, e.g. Margin = Revenue*0.3.</li>
+        <li><strong>GETPIVOTDATA</strong> — clicking a pivot cell in a formula writes this to pull that exact value reliably.</li>
+      </ul>
+      <div class="mod-callout">
+        <span class="tag">Practice</span>
+        <p>Build Revenue by Region (Rows) × Category (Columns); add a Region slicer; group Date by Quarter; show Revenue as % of Grand Total.</p>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="mod-sec" id="valid">
+      <div class="mod-num">09</div>
+      <h2 class="mt">Validation &amp; formatting</h2>
+      <p class="mod-sub">Control what can be entered, build dropdowns, and let cells format themselves based on their values.</p>
+      <h3>Data validation</h3>
+      <ul class="mod-notes">
+        <li><strong>Simple dropdown</strong> — Data ▸ Data Validation ▸ Allow: List ▸ Source: comma-separated items or a range.</li>
+        <li><strong>Numeric limit</strong> — Allow: Whole number ▸ between ▸ set min/max. Add an Error Alert to reject bad entries.</li>
+        <li><strong>Dependent dropdown</strong> — name each sub-list (Formulas ▸ Create from Selection). Second cell's List source: <code class="ic">=INDIRECT(A2)</code>.</li>
+      </ul>
+      <h3>Conditional formatting</h3>
+      <p>Home ▸ Conditional Formatting restyles cells by value: highlight rules, data bars, colour scales, icon sets, or a formula rule for whole-row highlighting.</p>
+      <div class="mod-callout">
+        <span class="tag">Practice</span>
+        <p>Select a Sales column ▸ Conditional Formatting ▸ Data Bars. Then add a Highlight Cells rule for values greater than 45000.</p>
+      </div>
+      <div class="mod-callout">
+        <span class="tag">⚠ Common mistakes</span>
+        <ul>
+          <li>Data Validation only blocks <strong>typed</strong> entries — pasting over a cell can bypass it.</li>
+          <li>Dependent dropdowns via INDIRECT need list names exactly matching the first dropdown's values (no spaces).</li>
+          <li>Conditional-formatting formula rules must start with = and use the active cell's reference.</li>
+          <li>Too many rules on huge ranges slow the file down — keep them targeted.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="mod-sec" id="vba">
+      <div class="mod-num">10</div>
+      <h2 class="mt">VBA &amp; macros</h2>
+      <p class="mod-sub">Automate repetitive work. Record a macro, read the code, then write your own with variables, loops and logic.</p>
+      <div class="mod-callout">
+        <span class="tag">When to use it</span>
+        <p>Reach for VBA when a job repeats, has many manual steps, needs a custom message box or button, or goes beyond formulas/Power Query. Rule of thumb: formulas for live calculations, Power Query for repeatable import/clean, VBA for full automation. Use the lightest tool that does the job.</p>
+      </div>
+      <h3>Setup</h3>
+      <ul class="mod-notes">
+        <li><strong>Show the Developer tab</strong> — File ▸ Options ▸ Customize Ribbon ▸ tick 'Developer'.</li>
+        <li><strong>Open the editor</strong> — Alt+F11. Insert ▸ Module creates a blank code sheet.</li>
+        <li><strong>Save as .xlsm</strong> — macros can't live in a normal .xlsx or they're stripped on close.</li>
+      </ul>
+      <h3>Record first, learn from it</h3>
+      <p>Developer ▸ Record Macro ▸ do your steps ▸ Stop. Excel writes the VBA for you. Then Alt+F11 to read it. Recorded code is verbose (lots of <code class="ic">.Select</code>); clean it up by acting on ranges directly.</p>
+      <h3>Anatomy of a macro</h3>
+      <pre><code><span class="kw">Option Explicit</span>   <span class="cm">' forces variable declaration, catches typos</span>
+
+<span class="kw">Sub</span> Totals()
+    <span class="kw">Dim</span> lastRow <span class="kw">As Long</span>, i <span class="kw">As Long</span>
+    <span class="kw">Dim</span> total <span class="kw">As Double</span>
+    lastRow = Cells(Rows.Count, <span class="st">"I"</span>).End(xlUp).Row
+    <span class="kw">For</span> i = 5 <span class="kw">To</span> lastRow
+        total = total + Cells(i, <span class="st">"I"</span>).Value
+    <span class="kw">Next</span> i
+    MsgBox <span class="st">"Total revenue: "</span> &amp; Format(total, <span class="st">"$#,##0"</span>)
+<span class="kw">End Sub</span></code></pre>
+      <h3>Core building blocks</h3>
+      <pre><code><span class="cm">' IF / conditionals</span>
+<span class="kw">If</span> Cells(i, <span class="st">"I"</span>).Value &gt; 1000 <span class="kw">Then</span>
+    Cells(i, <span class="st">"J"</span>).Value = <span class="st">"High"</span>
+<span class="kw">ElseIf</span> Cells(i, <span class="st">"I"</span>).Value &gt; 500 <span class="kw">Then</span>
+    Cells(i, <span class="st">"J"</span>).Value = <span class="st">"Mid"</span>
+<span class="kw">Else</span>
+    Cells(i, <span class="st">"J"</span>).Value = <span class="st">"Low"</span>
+<span class="kw">End If</span>
+
+<span class="cm">' loop every sheet</span>
+<span class="kw">Dim</span> ws <span class="kw">As Worksheet</span>
+<span class="kw">For Each</span> ws <span class="kw">In</span> ThisWorkbook.Worksheets
+    ws.Range(<span class="st">"A1"</span>).Font.Bold = <span class="kw">True</span>
+<span class="kw">Next</span> ws
+
+<span class="cm">' With block — cleaner and faster</span>
+<span class="kw">With</span> Range(<span class="st">"A4:I4"</span>)
+    .Font.Bold = <span class="kw">True</span>
+    .Interior.Color = RGB(33, 42, 59)
+    .Font.Color = vbWhite
+<span class="kw">End With</span></code></pre>
+      <div class="mod-callout">
+        <span class="tag">Good habits</span>
+        <ul>
+          <li><strong>Avoid .Select</strong> — <code class="ic">Range("B2").Value = 5</code> beats selecting then acting on Selection.</li>
+          <li><strong>Speed up big loops</strong> — set <code class="ic">Application.ScreenUpdating = False</code> and <code class="ic">Calculation = xlManual</code> at the start; restore at the end.</li>
+          <li><strong>Handle errors</strong> — <code class="ic">On Error GoTo Handler</code> so a macro fails gracefully.</li>
+          <li><strong>Security</strong> — macros are powerful; keep .xlsm files from unknown sources closed.</li>
+        </ul>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">★</span><span>Exercise: loop down column I and, in column J, write 'High' where Revenue &gt; 1000 else 'Low'.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <pre><code><span class="kw">Sub</span> TagRevenue()
+    <span class="kw">Dim</span> lastRow <span class="kw">As Long</span>, i <span class="kw">As Long</span>
+    lastRow = Cells(Rows.Count, <span class="st">"I"</span>).End(xlUp).Row
+    <span class="kw">For</span> i = 5 <span class="kw">To</span> lastRow
+        <span class="kw">If</span> Cells(i, <span class="st">"I"</span>).Value &gt; 1000 <span class="kw">Then</span>
+            Cells(i, <span class="st">"J"</span>).Value = <span class="st">"High"</span>
+        <span class="kw">Else</span>
+            Cells(i, <span class="st">"J"</span>).Value = <span class="st">"Low"</span>
+        <span class="kw">End If</span>
+    <span class="kw">Next</span> i
+<span class="kw">End Sub</span></code></pre>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="mod-sec" id="ref">
+      <div class="mod-num">11</div>
+      <h2 class="mt">Function cheat sheet</h2>
+      <p class="mod-sub">Syntax at a glance for every function in this module.</p>
+      <h3>Lookup</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Function</th><th>Syntax</th><th>Use</th></tr>
+        <tr><td>XLOOKUP</td><td class="f">=XLOOKUP(value, lookup_array, return_array, [if_not_found], …)</td><td>Modern all-purpose lookup</td></tr>
+        <tr><td>INDEX/MATCH</td><td class="f">=INDEX(return_range, MATCH(value, lookup_range, 0))</td><td>Universal, any version</td></tr>
+        <tr><td>VLOOKUP</td><td class="f">=VLOOKUP(value, table, col_index, FALSE)</td><td>Legacy; left-to-right only</td></tr>
+      </table></div>
+      <h3>Logic &amp; math</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Function</th><th>Syntax</th><th>Use</th></tr>
+        <tr><td>IF</td><td class="f">=IF(test, if_true, if_false)</td><td>Single decision</td></tr>
+        <tr><td>IFS</td><td class="f">=IFS(test1,res1, …, TRUE,default)</td><td>Multiple conditions</td></tr>
+        <tr><td>SUMIFS</td><td class="f">=SUMIFS(sum_range, crit_range1, crit1, …)</td><td>Conditional sum</td></tr>
+        <tr><td>COUNTIFS</td><td class="f">=COUNTIFS(crit_range1, crit1, …)</td><td>Conditional count</td></tr>
+        <tr><td>SUMPRODUCT</td><td class="f">=SUMPRODUCT(array1, array2, …)</td><td>Multiply then sum; weighted math</td></tr>
+      </table></div>
+      <h3>Text &amp; date</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Function</th><th>Syntax</th><th>Use</th></tr>
+        <tr><td>LEFT/RIGHT/MID</td><td class="f">=MID(text, start, num_chars)</td><td>Extract characters</td></tr>
+        <tr><td>FIND/SEARCH</td><td class="f">=FIND(find_text, within_text)</td><td>Locate a substring</td></tr>
+        <tr><td>TEXTBEFORE/AFTER</td><td class="f">=TEXTBEFORE(text, delimiter)</td><td>Split around a delimiter (365)</td></tr>
+        <tr><td>TEXTJOIN</td><td class="f">=TEXTJOIN(delim, ignore_empty, text1, …)</td><td>Join with a separator</td></tr>
+        <tr><td>DATEDIF</td><td class="f">=DATEDIF(start, end, "Y"/"M"/"D")</td><td>Duration between dates</td></tr>
+        <tr><td>NETWORKDAYS</td><td class="f">=NETWORKDAYS(start, end, [holidays])</td><td>Working days between dates</td></tr>
+      </table></div>
+      <h3>Dynamic arrays (365/2021)</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Function</th><th>Syntax</th><th>Use</th></tr>
+        <tr><td>FILTER</td><td class="f">=FILTER(array, include, [if_empty])</td><td>Keep rows meeting a condition</td></tr>
+        <tr><td>SORT</td><td class="f">=SORT(array, [sort_index], [order])</td><td>Sort a range (1 asc, -1 desc)</td></tr>
+        <tr><td>UNIQUE</td><td class="f">=UNIQUE(array)</td><td>Distinct values</td></tr>
+        <tr><td>SEQUENCE</td><td class="f">=SEQUENCE(rows, [cols], [start], [step])</td><td>Generate a number series</td></tr>
+      </table></div>
+      <h3>LAMBDA &amp; LET (365/2021)</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Function</th><th>Syntax</th><th>Use</th></tr>
+        <tr><td>LET</td><td class="f">=LET(name1,val1, …, calculation)</td><td>Name intermediate steps</td></tr>
+        <tr><td>LAMBDA</td><td class="f">=LAMBDA(param1, …, calculation)</td><td>Define a reusable function</td></tr>
+        <tr><td>MAP</td><td class="f">=MAP(array, LAMBDA(x, …))</td><td>Apply a function to each element</td></tr>
+        <tr><td>REDUCE</td><td class="f">=REDUCE(init, array, LAMBDA(acc,x, …))</td><td>Accumulate to a single result</td></tr>
+      </table></div>
+      <h3>DAX (Power Pivot)</h3>
+      <div class="mod-table-wrap"><table class="mt">
+        <tr><th>Function</th><th>Syntax</th><th>Use</th></tr>
+        <tr><td>SUMX</td><td class="f">SUMX(Sales, Sales[Qty]*Sales[UnitPrice])</td><td>Row-by-row then sum</td></tr>
+        <tr><td>CALCULATE</td><td class="f">=CALCULATE(expr, filter1, …)</td><td>Change filter context — key DAX fn</td></tr>
+        <tr><td>DIVIDE</td><td class="f">=DIVIDE(num, den, [alt])</td><td>Safe division</td></tr>
+        <tr><td>TOTALYTD</td><td class="f">=TOTALYTD(expr, Calendar[Date])</td><td>Year-to-date total</td></tr>
+      </table></div>
+    </section>
+
+  </div>
+</section>
+
+<div class="pager"><a class="prev" href="learning-sql.html">← <span><span class="sub">Previous</span>SQL Module</span></a><div class="spacer"></div><a class="next" href="learning.html"><span><span class="sub">Next</span>Learning</span> →</a></div>
+</main>
+<footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p></div></footer>
+<script>document.querySelectorAll('.year').forEach(function(y){y.textContent=new Date().getFullYear();});</script>
+<script>
+  document.querySelectorAll('.mod-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var ans = btn.nextElementSibling;
+      var open = btn.classList.toggle('open');
+      var label = btn.querySelector('span:first-child');
+      if(open){ ans.style.maxHeight = ans.scrollHeight + 'px'; label.textContent = 'Hide answer'; }
+      else { ans.style.maxHeight = '0'; label.textContent = 'Show answer'; }
+    });
+  });
+</script>
+</body>
+</html>

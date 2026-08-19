@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning | Nasrul Khair</title>
+<meta name="description" content="Hands-on learning modules by Nasrul Khair — SQL and Excel, from intermediate to advanced.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="dot"></span>Nasrul Khair</a>
+    <div class="links"><a href="index.html">Home</a><a href="about.html">About</a><a href="experience.html">Experience</a><a href="projects.html">Projects</a><a href="extra.html">Extra Work</a><a href="learning.html" class="active">Learning</a><a href="certifications.html">Certifications</a><a href="skills.html">Skills</a><a href="contact.html">Contact</a></div>
+  </div>
+</nav>
+<main>
+
+<section class="page-section">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="page-eyebrow"><span class="idx">5</span> Learning</div>
+      <h1>Hands-on learning modules</h1>
+      <p class="lead">Reference modules I built while sharpening my own toolkit — and use to teach others. Read the notes, study the live examples, then test yourself on the drills. Free to browse and share.</p>
+    </div>
+
+    <div class="explore-grid">
+      <a class="explore-card lm-card" href="learning-sql.html">
+        <span class="emo">🗄️</span>
+        <h3>SQL — Intermediate to Advanced</h3>
+        <p>Joins, window functions, CTEs, and the data-engineering side: stored procedures, MERGE upserts, medallion architecture, and automated pipelines on BigQuery.</p>
+        <div class="lm-tags"><span>Joins</span><span>Window fns</span><span>CTEs</span><span>Stored procs</span><span>Medallion</span><span>BigQuery</span></div>
+        <span class="go">Open module →</span>
+      </a>
+      <a class="explore-card lm-card" href="learning-excel.html">
+        <span class="emo">📊</span>
+        <h3>Excel — Intermediate to Advanced</h3>
+        <p>Lookups, conditional logic, dynamic arrays, LAMBDA/LET, plus desktop guides for Power Query, Power Pivot &amp; DAX, PivotTables, and VBA macros.</p>
+        <div class="lm-tags"><span>XLOOKUP</span><span>Dynamic arrays</span><span>LAMBDA</span><span>Power Query</span><span>DAX</span><span>VBA</span></div>
+        <span class="go">Open module →</span>
+      </a>
+    </div>
+
+    <div class="lm-note">
+      <span class="emo">✦</span>
+      <p>More modules on the way. These pair with my <a class="lm-inline" href="extra.html">dashboards &amp; EDA notebooks</a> and the <a class="lm-inline" href="projects.html">full case studies</a>.</p>
+    </div>
+  </div>
+</section>
+
+<div class="pager"><a class="prev" href="extra.html">← <span><span class="sub">Previous</span>Extra Work</span></a><div class="spacer"></div><a class="next" href="certifications.html"><span><span class="sub">Next</span>Certifications</span> →</a></div>
+</main>
+<footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p></div></footer>
+<script>document.querySelectorAll('.year').forEach(function(y){y.textContent=new Date().getFullYear();});</script>
+</body>
+</html>

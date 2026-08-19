@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Module | Nasrul Khair</title>
+<meta name="description" content="SQL learning module by Nasrul Khair — intermediate to advanced, from joins and window functions to stored procedures and medallion pipelines on BigQuery.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="dot"></span>Nasrul Khair</a>
+    <div class="links"><a href="index.html">Home</a><a href="about.html">About</a><a href="experience.html">Experience</a><a href="projects.html">Projects</a><a href="extra.html">Extra Work</a><a href="learning.html" class="active">Learning</a><a href="certifications.html">Certifications</a><a href="skills.html">Skills</a><a href="contact.html">Contact</a></div>
+  </div>
+</nav>
+<main>
+
+<section class="page-section">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="page-eyebrow"><span class="idx">SQL</span> Learning Module</div>
+      <h1>SQL — Intermediate to Advanced</h1>
+      <p class="lead">The joins, window functions, and aggregation patterns I reach for daily, then the data-engineering side: stored procedures, upserts, and automated medallion pipelines. Each section has notes, a worked example, and a drill. Answers stay hidden until you ask.</p>
+    </div>
+
+    <nav class="mod-toc">
+      <h2>What's inside</h2>
+      <ol>
+        <li><a href="#joins">Joins beyond INNER</a></li>
+        <li><a href="#agg">Aggregation &amp; GROUP BY</a></li>
+        <li><a href="#having">WHERE vs HAVING</a></li>
+        <li><a href="#subq">Subqueries &amp; CTEs</a></li>
+        <li><a href="#window">Window functions</a></li>
+        <li><a href="#rank">Ranking &amp; running totals</a></li>
+        <li><a href="#case">CASE &amp; conditional logic</a></li>
+        <li><a href="#order">Order of execution</a></li>
+        <li><a href="#proc">Stored procedures</a></li>
+        <li><a href="#dml">INSERT / UPDATE / MERGE</a></li>
+        <li><a href="#medallion">Medallion setup</a></li>
+        <li><a href="#ingest">Automating data-in</a></li>
+        <li><a href="#transform">Automating transforms</a></li>
+        <li><a href="#orchestrate">Python orchestration</a></li>
+      </ol>
+      <p class="toc-foot">Sections 01–08 cover analytical SQL. Sections 09–14 shift into data engineering, grounded on BigQuery / GCP.</p>
+    </nav>
+
+    <!-- 1 -->
+    <section class="mod-sec" id="joins">
+      <div class="mod-num">01</div>
+      <h2 class="mt">Joins beyond INNER</h2>
+      <p>Joins combine rows from two or more tables on a related column. The type decides <strong>which rows survive</strong> when there's no match.</p>
+      <ul class="mod-notes">
+        <li><strong>INNER JOIN</strong> — only rows with a match in both tables.</li>
+        <li><strong>LEFT JOIN</strong> — every row from the left table; unmatched right columns come back <code class="ic">NULL</code>.</li>
+        <li><strong>RIGHT JOIN</strong> — every row from the right table; the mirror of LEFT.</li>
+        <li><strong>FULL OUTER JOIN</strong> — every row from both, matched where possible.</li>
+        <li><strong>SELF JOIN</strong> — a table joined to itself (employee → manager in one table).</li>
+        <li><strong>CROSS JOIN</strong> — every combination of rows. Rarely what you want by accident.</li>
+      </ul>
+      <pre><code><span class="cm">-- Customers and their orders, keeping customers with zero orders</span>
+<span class="kw">SELECT</span> c.customer_name, o.order_id, o.amount
+<span class="kw">FROM</span> customers c
+<span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> o.customer_id = c.customer_id;</code></pre>
+      <div class="mod-callout">
+        <span class="tag">Interview favourite</span>
+        <p>To find customers with <em>no</em> orders: LEFT JOIN then filter <code class="ic">WHERE o.order_id IS NULL</code>. The unmatched rows are exactly the ones you want.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q1</span><span>You have <code class="ic">employees(emp_id, name, manager_id)</code>. List each employee alongside their manager's name.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Self join — join the table to itself, aliased twice:</p>
+          <pre><code><span class="kw">SELECT</span> e.name <span class="kw">AS</span> employee, m.name <span class="kw">AS</span> manager
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id;</code></pre>
+          <p>LEFT JOIN (not INNER) so the top boss, whose <code class="ic">manager_id</code> is NULL, still shows.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="mod-sec" id="agg">
+      <div class="mod-num">02</div>
+      <h2 class="mt">Aggregation &amp; GROUP BY</h2>
+      <p>Aggregate functions collapse many rows into one summary value. <code class="ic">GROUP BY</code> tells SQL what to collapse them by.</p>
+      <ul class="mod-notes">
+        <li><strong>COUNT()</strong> counts rows; <code class="ic">COUNT(col)</code> skips NULLs, <code class="ic">COUNT(*)</code> doesn't.</li>
+        <li><strong>SUM(), AVG()</strong> ignore NULLs entirely — worth remembering when averages look off.</li>
+        <li><strong>COUNT(DISTINCT col)</strong> counts unique values only.</li>
+        <li>Every non-aggregated column in SELECT must appear in GROUP BY.</li>
+      </ul>
+      <pre><code><span class="cm">-- Revenue and order count per region, busiest first</span>
+<span class="kw">SELECT</span> region, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> orders, <span class="fn">SUM</span>(amount) <span class="kw">AS</span> revenue
+<span class="kw">FROM</span> orders
+<span class="kw">GROUP BY</span> region
+<span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>;</code></pre>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q2</span><span>From an <code class="ic">orders</code> table, find how many <em>distinct</em> customers placed an order in each month of 2025.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <pre><code><span class="kw">SELECT</span> <span class="fn">MONTH</span>(order_date) <span class="kw">AS</span> mth,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> customer_id) <span class="kw">AS</span> unique_customers
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> <span class="fn">YEAR</span>(order_date) = <span class="st">2025</span>
+<span class="kw">GROUP BY</span> <span class="fn">MONTH</span>(order_date)
+<span class="kw">ORDER BY</span> mth;</code></pre>
+          <p>The <code class="ic">DISTINCT</code> inside COUNT is the key — without it you count repeat orders, not people.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="mod-sec" id="having">
+      <div class="mod-num">03</div>
+      <h2 class="mt">WHERE vs HAVING</h2>
+      <p>Both filter, but at different stages. One of the most common intermediate mix-ups.</p>
+      <ul class="mod-notes">
+        <li><strong>WHERE</strong> filters individual rows <em>before</em> grouping. Can't use aggregates.</li>
+        <li><strong>HAVING</strong> filters groups <em>after</em> aggregation. This is where aggregates live.</li>
+      </ul>
+      <pre><code><span class="cm">-- Regions with more than 100 orders AND only recent data</span>
+<span class="kw">SELECT</span> region, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> orders
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> order_date >= <span class="st">'2025-01-01'</span>   <span class="cm">-- row filter first</span>
+<span class="kw">GROUP BY</span> region
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="st">100</span>;          <span class="cm">-- group filter after</span></code></pre>
+      <div class="mod-callout">
+        <span class="tag">Rule of thumb</span>
+        <p>If your condition uses an aggregate like <code class="ic">SUM()</code> or <code class="ic">COUNT()</code>, it belongs in HAVING. If it's about a raw column value, use WHERE — it's faster because it cuts rows earlier.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q3</span><span>Find products whose <em>total</em> quantity sold across all orders exceeds 500 units.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <pre><code><span class="kw">SELECT</span> product_id, <span class="fn">SUM</span>(quantity) <span class="kw">AS</span> total_qty
+<span class="kw">FROM</span> order_items
+<span class="kw">GROUP BY</span> product_id
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(quantity) > <span class="st">500</span>;</code></pre>
+          <p>The threshold is on a sum, so it must be HAVING. Putting it in WHERE would error.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="mod-sec" id="subq">
+      <div class="mod-num">04</div>
+      <h2 class="mt">Subqueries &amp; CTEs</h2>
+      <p>A subquery is a query nested inside another. A <strong>CTE</strong> (Common Table Expression) is the same idea, named and placed up front with <code class="ic">WITH</code> — far more readable when logic stacks up.</p>
+      <ul class="mod-notes">
+        <li><strong>Scalar subquery</strong> — returns one value, usable anywhere a value fits.</li>
+        <li><strong>Correlated subquery</strong> — references the outer query; runs once per outer row (can be slow).</li>
+        <li><strong>CTE</strong> — a named temporary result you reference like a table. Chain several with commas.</li>
+      </ul>
+      <pre><code><span class="cm">-- Customers who spent above the overall average, via CTE</span>
+<span class="kw">WITH</span> customer_totals <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> customer_id, <span class="fn">SUM</span>(amount) <span class="kw">AS</span> total_spent
+    <span class="kw">FROM</span> orders
+    <span class="kw">GROUP BY</span> customer_id
+)
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span> customer_totals
+<span class="kw">WHERE</span> total_spent > (<span class="kw">SELECT</span> <span class="fn">AVG</span>(total_spent) <span class="kw">FROM</span> customer_totals);</code></pre>
+      <div class="mod-callout">
+        <span class="tag">Why CTEs win</span>
+        <p>They read top-to-bottom like steps, can be referenced more than once, and make debugging easy — run each CTE on its own. Prefer them over deeply nested subqueries.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q4</span><span>Using a CTE, return the single most recent order per customer (customer_id, order_id, order_date).</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Rank each customer's orders by date, then keep rank 1 — a CTE plus a window function:</p>
+          <pre><code><span class="kw">WITH</span> ranked <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> customer_id, order_id, order_date,
+           <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+               <span class="kw">PARTITION BY</span> customer_id
+               <span class="kw">ORDER BY</span> order_date <span class="kw">DESC</span>
+           ) <span class="kw">AS</span> rn
+    <span class="kw">FROM</span> orders
+)
+<span class="kw">SELECT</span> customer_id, order_id, order_date
+<span class="kw">FROM</span> ranked
+<span class="kw">WHERE</span> rn = <span class="st">1</span>;</code></pre>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="mod-sec" id="window">
+      <div class="mod-num">05</div>
+      <h2 class="mt">Window functions</h2>
+      <p>The dividing line between intermediate and advanced. A window function computes across a set of rows <strong>without collapsing them</strong> — every row stays, but gains a value calculated over its window.</p>
+      <ul class="mod-notes">
+        <li><strong>OVER()</strong> defines the window. Empty = the whole result set.</li>
+        <li><strong>PARTITION BY</strong> splits rows into groups the function resets on (like GROUP BY, but rows survive).</li>
+        <li><strong>ORDER BY</strong> inside OVER sets the order for running / positional calcs.</li>
+      </ul>
+      <pre><code><span class="cm">-- Each order's amount vs its region's average, rows intact</span>
+<span class="kw">SELECT</span> order_id, region, amount,
+       <span class="fn">AVG</span>(amount) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> region) <span class="kw">AS</span> region_avg
+<span class="kw">FROM</span> orders;</code></pre>
+      <p>Compare that to a GROUP BY: here you keep every order <em>and</em> see the regional average beside it — no join back required.</p>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q5</span><span>For each row, show what percentage that order's amount is of its region's total revenue.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <pre><code><span class="kw">SELECT</span> order_id, region, amount,
+       <span class="fn">ROUND</span>(
+         amount * <span class="st">100.0</span> /
+         <span class="fn">SUM</span>(amount) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> region), <span class="st">2</span>
+       ) <span class="kw">AS</span> pct_of_region
+<span class="kw">FROM</span> orders;</code></pre>
+          <p>The windowed <code class="ic">SUM</code> gives each row its region total without a separate GROUP BY and join.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="mod-sec" id="rank">
+      <div class="mod-num">06</div>
+      <h2 class="mt">Ranking &amp; running totals</h2>
+      <p>The most-used window functions in analyst work.</p>
+      <ul class="mod-notes">
+        <li><strong>ROW_NUMBER()</strong> — unique sequential number, no ties.</li>
+        <li><strong>RANK()</strong> — ties share a rank, then it skips (1, 2, 2, 4).</li>
+        <li><strong>DENSE_RANK()</strong> — ties share a rank, no gap (1, 2, 2, 3).</li>
+        <li><strong>LAG() / LEAD()</strong> — value from the previous / next row (great for period-over-period).</li>
+        <li><strong>NTILE(n)</strong> — split rows into n roughly equal buckets (quartiles, deciles).</li>
+        <li>Running total: an aggregate with <code class="ic">ORDER BY</code> inside OVER.</li>
+      </ul>
+      <pre><code><span class="cm">-- Month-over-month revenue change with LAG</span>
+<span class="kw">SELECT</span> month, revenue,
+       revenue - <span class="fn">LAG</span>(revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month) <span class="kw">AS</span> mom_change
+<span class="kw">FROM</span> monthly_revenue;</code></pre>
+      <pre><code><span class="cm">-- Running / cumulative total of revenue by date</span>
+<span class="kw">SELECT</span> order_date, amount,
+       <span class="fn">SUM</span>(amount) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> order_date
+                        <span class="kw">ROWS UNBOUNDED PRECEDING</span>) <span class="kw">AS</span> running_total
+<span class="kw">FROM</span> orders;</code></pre>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q6</span><span>Rank products by revenue <em>within each category</em>, top seller = rank 1. Which function if you don't want gaps after ties?</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Use <code class="ic">DENSE_RANK()</code> (no gaps) and PARTITION BY category:</p>
+          <pre><code><span class="kw">SELECT</span> category, product_id, revenue,
+       <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (
+           <span class="kw">PARTITION BY</span> category
+           <span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>
+       ) <span class="kw">AS</span> rnk
+<span class="kw">FROM</span> product_revenue;</code></pre>
+          <p>Use ROW_NUMBER instead if you need exactly one winner even when revenues tie.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="mod-sec" id="case">
+      <div class="mod-num">07</div>
+      <h2 class="mt">CASE &amp; conditional logic</h2>
+      <p><code class="ic">CASE</code> is SQL's if/else. It shines for bucketing values and for <strong>conditional aggregation</strong> — turning rows into columns (pivoting).</p>
+      <pre><code><span class="cm">-- Bucket customers by spend</span>
+<span class="kw">SELECT</span> customer_id, total_spent,
+       <span class="kw">CASE</span>
+         <span class="kw">WHEN</span> total_spent >= <span class="st">10000</span> <span class="kw">THEN</span> <span class="st">'VIP'</span>
+         <span class="kw">WHEN</span> total_spent >= <span class="st">1000</span>  <span class="kw">THEN</span> <span class="st">'Regular'</span>
+         <span class="kw">ELSE</span> <span class="st">'New'</span>
+       <span class="kw">END</span> <span class="kw">AS</span> tier
+<span class="kw">FROM</span> customer_totals;</code></pre>
+      <div class="mod-callout">
+        <span class="tag">Power move</span>
+        <p>Wrap CASE inside SUM to pivot: <code class="ic">SUM(CASE WHEN status='paid' THEN amount ELSE 0 END)</code> gives a paid-revenue column beside other status columns — one row per group.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q7</span><span>In one row per region, show total revenue split into <code class="ic">online_revenue</code> and <code class="ic">store_revenue</code> from a <code class="ic">channel</code> column.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Conditional aggregation — CASE inside SUM:</p>
+          <pre><code><span class="kw">SELECT</span> region,
+       <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> channel = <span class="st">'online'</span> <span class="kw">THEN</span> amount <span class="kw">ELSE</span> <span class="st">0</span> <span class="kw">END</span>) <span class="kw">AS</span> online_revenue,
+       <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> channel = <span class="st">'store'</span>  <span class="kw">THEN</span> amount <span class="kw">ELSE</span> <span class="st">0</span> <span class="kw">END</span>) <span class="kw">AS</span> store_revenue
+<span class="kw">FROM</span> orders
+<span class="kw">GROUP BY</span> region;</code></pre>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="mod-sec" id="order">
+      <div class="mod-num">08</div>
+      <h2 class="mt">Order of execution</h2>
+      <p>You <em>write</em> SQL in one order, but the engine <em>runs</em> it in another. Knowing this explains a lot of "why won't my alias work?" errors.</p>
+      <h3>Written order</h3>
+      <p><code class="ic">SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT</code></p>
+      <h3>Actual execution order</h3>
+      <ul class="mod-notes">
+        <li><strong>1. FROM / JOIN</strong> — assemble the source rows</li>
+        <li><strong>2. WHERE</strong> — filter rows</li>
+        <li><strong>3. GROUP BY</strong> — group them</li>
+        <li><strong>4. HAVING</strong> — filter groups</li>
+        <li><strong>5. SELECT</strong> — pick columns, compute aliases</li>
+        <li><strong>6. ORDER BY</strong> — sort</li>
+        <li><strong>7. LIMIT</strong> — trim</li>
+      </ul>
+      <div class="mod-callout">
+        <span class="tag">The "aha"</span>
+        <p>Because SELECT runs <em>after</em> WHERE, an alias you create in SELECT can't be used in WHERE — the engine hasn't reached it yet. But it <em>can</em> be used in ORDER BY, which runs later. That single fact explains most alias errors.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q8</span><span>Why does <code class="ic">SELECT amount*2 AS dbl FROM orders WHERE dbl &gt; 100</code> error, and how do you fix it without repeating the expression?</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>WHERE runs before SELECT, so the alias <code class="ic">dbl</code> doesn't exist yet. Wrap it in a CTE so the alias is materialised before you filter:</p>
+          <pre><code><span class="kw">WITH</span> calc <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> order_id, amount * <span class="st">2</span> <span class="kw">AS</span> dbl
+    <span class="kw">FROM</span> orders
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> calc <span class="kw">WHERE</span> dbl > <span class="st">100</span>;</code></pre>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- PART TWO DIVIDER -->
+    <section class="mod-sec mod-divider">
+      <div class="mod-num">PART TWO</div>
+      <h2 class="mt">From analyst to engineer</h2>
+      <p>Everything above queries data that already exists. Everything below is about <strong>moving, shaping, and automating</strong> it — the pipeline work behind every dashboard. Examples are grounded on BigQuery, but the patterns carry to Snowflake and Postgres with minor syntax changes.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="mod-sec" id="proc">
+      <div class="mod-num">09</div>
+      <h2 class="mt">Stored procedures &amp; scripting</h2>
+      <p>A <strong>stored procedure</strong> is a named, reusable block of SQL saved in the database. Instead of pasting the same logic weekly, you call it once. In BigQuery these live inside a dataset with scripting extensions.</p>
+      <ul class="mod-notes">
+        <li><strong>Why</strong> — reuse, consistency, one place to fix logic, and they take parameters.</li>
+        <li><strong>Variables</strong> — <code class="ic">DECLARE</code> and <code class="ic">SET</code> hold values between statements.</li>
+        <li><strong>Control flow</strong> — <code class="ic">IF</code>, <code class="ic">WHILE</code>, <code class="ic">LOOP</code>.</li>
+        <li><strong>Call it</strong> — <code class="ic">CALL dataset.proc_name(args)</code>.</li>
+      </ul>
+      <pre><code><span class="cm">-- Refresh a daily summary table for a given date</span>
+<span class="kw">CREATE OR REPLACE PROCEDURE</span> `proj.gold.refresh_daily_sales`(run_date <span class="kw">DATE</span>)
+<span class="kw">BEGIN</span>
+  <span class="cm">-- remove existing rows for that date (idempotent re-runs)</span>
+  <span class="kw">DELETE FROM</span> `proj.gold.daily_sales` <span class="kw">WHERE</span> sales_date = run_date;
+
+  <span class="cm">-- insert freshly aggregated rows</span>
+  <span class="kw">INSERT INTO</span> `proj.gold.daily_sales` (sales_date, region, revenue, orders)
+  <span class="kw">SELECT</span> run_date, region, <span class="fn">SUM</span>(amount), <span class="fn">COUNT</span>(*)
+  <span class="kw">FROM</span> `proj.silver.orders`
+  <span class="kw">WHERE</span> <span class="fn">DATE</span>(order_ts) = run_date
+  <span class="kw">GROUP BY</span> region;
+<span class="kw">END</span>;
+
+<span class="kw">CALL</span> `proj.gold.refresh_daily_sales`(<span class="st">'2026-08-19'</span>);</code></pre>
+      <div class="mod-callout">
+        <span class="tag">The idempotency trick</span>
+        <p>Notice the DELETE-then-INSERT for one date. That makes the procedure safe to re-run — running it twice for the same day won't double the numbers. This "delete the slice, reinsert the slice" pattern is the backbone of reliable daily pipelines.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q9</span><span>Why is a plain <code class="ic">INSERT INTO ... SELECT</code> inside a daily procedure dangerous if it runs twice, and what two approaches fix it?</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>A bare INSERT appends, so a second run duplicates that day's rows and inflates every downstream metric. Two fixes:</p>
+          <ul class="mod-notes">
+            <li><strong>Delete-then-insert</strong> for the target slice (shown above).</li>
+            <li><strong>MERGE</strong> (upsert) keyed on the unique columns — updates existing rows instead of adding new ones (next section).</li>
+          </ul>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="mod-sec" id="dml">
+      <div class="mod-num">10</div>
+      <h2 class="mt">INSERT / UPDATE / DELETE / MERGE</h2>
+      <p>The DML statements that change data. As an analyst you read; as an engineer you write. MERGE is the one that separates beginners from the rest.</p>
+      <h3>INSERT — add rows</h3>
+      <pre><code><span class="kw">INSERT INTO</span> `proj.silver.orders`
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> `proj.bronze.orders_raw`
+<span class="kw">WHERE</span> order_id <span class="kw">IS NOT NULL</span>;</code></pre>
+      <h3>UPDATE — change existing rows</h3>
+      <pre><code><span class="kw">UPDATE</span> `proj.silver.customers`
+<span class="kw">SET</span> city = <span class="st">'Kuala Lumpur'</span>, updated_at = <span class="fn">CURRENT_TIMESTAMP</span>()
+<span class="kw">WHERE</span> customer_id = <span class="st">101</span>;</code></pre>
+      <h3>DELETE — remove rows</h3>
+      <pre><code><span class="kw">DELETE FROM</span> `proj.bronze.orders_raw`
+<span class="kw">WHERE</span> _ingested_at &lt; <span class="fn">DATE_SUB</span>(<span class="fn">CURRENT_DATE</span>(), <span class="kw">INTERVAL</span> <span class="st">90</span> <span class="kw">DAY</span>);</code></pre>
+      <h3>MERGE — upsert (update if exists, insert if not)</h3>
+      <pre><code><span class="kw">MERGE</span> `proj.silver.customers` <span class="kw">AS</span> t
+<span class="kw">USING</span> `proj.bronze.customers_raw` <span class="kw">AS</span> s
+<span class="kw">ON</span> t.customer_id = s.customer_id
+<span class="kw">WHEN MATCHED THEN</span>
+  <span class="kw">UPDATE SET</span> t.name = s.name, t.city = s.city, t.updated_at = <span class="fn">CURRENT_TIMESTAMP</span>()
+<span class="kw">WHEN NOT MATCHED THEN</span>
+  <span class="kw">INSERT</span> (customer_id, name, city, updated_at)
+  <span class="kw">VALUES</span> (s.customer_id, s.name, s.city, <span class="fn">CURRENT_TIMESTAMP</span>());</code></pre>
+      <div class="mod-callout">
+        <span class="tag">Why MERGE matters</span>
+        <p>Without it you'd need separate UPDATE and INSERT passes plus logic to detect which rows are new. MERGE does both atomically on a key. This is exactly how you keep a silver table in sync with incoming bronze data every night.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q10</span><span>Daily data lands in <code class="ic">bronze.customers_raw</code>. Some customers are new, some changed city. Update the changed and add the new in one pass.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>A textbook MERGE keyed on <code class="ic">customer_id</code>, exactly the pattern above. MATCHED → UPDATE the mutable columns; NOT MATCHED → INSERT the new record. One atomic upsert, no separate detection step.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="mod-sec" id="medallion">
+      <div class="mod-num">11</div>
+      <h2 class="mt">Medallion architecture setup</h2>
+      <p>The medallion pattern organises a warehouse into three quality layers. In BigQuery each layer is a <strong>dataset</strong> (BigQuery's word for a schema), and tables live inside them.</p>
+      <ul class="mod-notes">
+        <li><strong>Bronze</strong> — raw, as-ingested data. Minimal changes. Your source of truth if anything downstream breaks.</li>
+        <li><strong>Silver</strong> — cleaned, typed, deduplicated, conformed. The trustworthy working layer.</li>
+        <li><strong>Gold</strong> — business-ready aggregates and models (star schema, KPIs) that feed Power BI.</li>
+      </ul>
+      <h3>Create the datasets (schemas)</h3>
+      <pre><code><span class="kw">CREATE SCHEMA IF NOT EXISTS</span> `proj.bronze` <span class="kw">OPTIONS</span>(location=<span class="st">'asia-southeast1'</span>);
+<span class="kw">CREATE SCHEMA IF NOT EXISTS</span> `proj.silver` <span class="kw">OPTIONS</span>(location=<span class="st">'asia-southeast1'</span>);
+<span class="kw">CREATE SCHEMA IF NOT EXISTS</span> `proj.gold`   <span class="kw">OPTIONS</span>(location=<span class="st">'asia-southeast1'</span>);</code></pre>
+      <h3>Define tables with types &amp; partitioning</h3>
+      <pre><code><span class="cm">-- bronze: forgiving, keep an ingestion timestamp</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> `proj.bronze.orders_raw` (
+  order_id     <span class="kw">STRING</span>,
+  customer_id  <span class="kw">STRING</span>,
+  amount       <span class="kw">STRING</span>,        <span class="cm">-- raw text; cast later in silver</span>
+  order_ts     <span class="kw">STRING</span>,
+  _ingested_at <span class="kw">TIMESTAMP</span>
+);
+
+<span class="cm">-- silver: typed &amp; partitioned by date for cheap, fast scans</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> `proj.silver.orders` (
+  order_id     <span class="kw">STRING</span>,
+  customer_id  <span class="kw">STRING</span>,
+  amount       <span class="kw">NUMERIC</span>,
+  order_ts     <span class="kw">TIMESTAMP</span>,
+  updated_at   <span class="kw">TIMESTAMP</span>
+)
+<span class="kw">PARTITION BY</span> <span class="fn">DATE</span>(order_ts)
+<span class="kw">CLUSTER BY</span> customer_id;</code></pre>
+      <div class="mod-callout">
+        <span class="tag">Partition &amp; cluster</span>
+        <p>Partitioning by date means a query for one day scans one day's data, not the whole table — directly cutting cost and time in BigQuery. Clustering by a frequently-filtered column speeds lookups further. On big tables this is the difference between cents and dollars per query.</p>
+      </div>
+      <h3>Bronze → Silver transform (clean &amp; type)</h3>
+      <pre><code><span class="kw">CREATE OR REPLACE TABLE</span> `proj.silver.orders` <span class="kw">AS</span>
+<span class="kw">WITH</span> deduped <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *,
+         <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+           <span class="kw">PARTITION BY</span> order_id <span class="kw">ORDER BY</span> _ingested_at <span class="kw">DESC</span>
+         ) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> `proj.bronze.orders_raw`
+  <span class="kw">WHERE</span> order_id <span class="kw">IS NOT NULL</span>
+)
+<span class="kw">SELECT</span> order_id, customer_id,
+       <span class="fn">SAFE_CAST</span>(amount <span class="kw">AS NUMERIC</span>)     <span class="kw">AS</span> amount,
+       <span class="fn">SAFE_CAST</span>(order_ts <span class="kw">AS TIMESTAMP</span>)  <span class="kw">AS</span> order_ts,
+       <span class="fn">CURRENT_TIMESTAMP</span>()               <span class="kw">AS</span> updated_at
+<span class="kw">FROM</span> deduped
+<span class="kw">WHERE</span> rn = <span class="st">1</span>;   <span class="cm">-- keep only the latest version of each order</span></code></pre>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q11</span><span>Why keep <code class="ic">amount</code> as STRING in bronze but NUMERIC in silver, and what does <code class="ic">SAFE_CAST</code> protect you from?</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Bronze should ingest everything without failing — a row with <code class="ic">"N/A"</code> in the amount would make a typed column reject the whole load. Keeping it STRING lets raw data land intact; silver then enforces types deliberately. <code class="ic">SAFE_CAST</code> returns <code class="ic">NULL</code> instead of erroring when a value can't convert, so one bad row won't kill the transform — you can filter or inspect the NULLs afterwards.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="mod-sec" id="ingest">
+      <div class="mod-num">12</div>
+      <h2 class="mt">Automating data-in (ingestion)</h2>
+      <p>Getting data <em>into</em> bronze. The source is usually files (CSV/JSON) in Google Cloud Storage. Two main routes: load jobs and external tables.</p>
+      <h3>Option A — Load files from GCS into bronze (Python)</h3>
+      <pre><code><span class="kw">from</span> google.cloud <span class="kw">import</span> bigquery
+
+client = bigquery.Client(project=<span class="st">"proj"</span>)
+
+job_config = bigquery.LoadJobConfig(
+    source_format=bigquery.SourceFormat.CSV,
+    skip_leading_rows=<span class="st">1</span>,
+    write_disposition=<span class="st">"WRITE_APPEND"</span>,   <span class="cm"># add to bronze, don't overwrite</span>
+    schema=[
+        bigquery.SchemaField(<span class="st">"order_id"</span>, <span class="st">"STRING"</span>),
+        bigquery.SchemaField(<span class="st">"customer_id"</span>, <span class="st">"STRING"</span>),
+        bigquery.SchemaField(<span class="st">"amount"</span>, <span class="st">"STRING"</span>),
+        bigquery.SchemaField(<span class="st">"order_ts"</span>, <span class="st">"STRING"</span>),
+    ],
+)
+
+uri = <span class="st">"gs://my-bucket/incoming/orders_*.csv"</span>
+load_job = client.load_table_from_uri(uri, <span class="st">"proj.bronze.orders_raw"</span>, job_config=job_config)
+load_job.result()
+<span class="fn">print</span>(<span class="st">f"Loaded {load_job.output_rows} rows into bronze"</span>)</code></pre>
+      <div class="mod-callout">
+        <span class="tag">write_disposition</span>
+        <p><code class="ic">WRITE_APPEND</code> adds rows, <code class="ic">WRITE_TRUNCATE</code> replaces the whole table, <code class="ic">WRITE_EMPTY</code> only writes if empty. For bronze ingestion you usually append, then dedupe downstream in silver.</p>
+      </div>
+      <h3>Option B — External table (query files in place)</h3>
+      <pre><code><span class="kw">CREATE OR REPLACE EXTERNAL TABLE</span> `proj.bronze.orders_ext`
+<span class="kw">OPTIONS</span> (
+  format = <span class="st">'CSV'</span>,
+  uris = [<span class="st">'gs://my-bucket/incoming/orders_*.csv'</span>],
+  skip_leading_rows = <span class="st">1</span>
+);</code></pre>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q12</span><span>Ingestion appends CSVs hourly. By silver you get duplicates when a file is re-delivered. Handle it at ingestion or later?</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Handle it <strong>later, in the bronze→silver step</strong>. Let bronze stay append-only and complete (it's your raw record). Then dedupe in silver with <code class="ic">ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY _ingested_at DESC)</code> keeping <code class="ic">rn = 1</code>. This keeps ingestion simple and pushes cleaning to where it belongs.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="mod-sec" id="transform">
+      <div class="mod-num">13</div>
+      <h2 class="mt">Automating transforms (bronze → gold)</h2>
+      <p>Once data lands, the layers refresh on a schedule. Two native ways in BigQuery, plus the procedure approach from section 09.</p>
+      <h3>Scheduled queries</h3>
+      <p>BigQuery can run a saved statement on a cron-like schedule. Best practice: have the schedule simply <code class="ic">CALL</code> a stored procedure so logic stays in one place.</p>
+      <pre><code><span class="cm">-- What a daily 2am scheduled query would run</span>
+<span class="kw">CALL</span> `proj.gold.refresh_daily_sales`(<span class="fn">CURRENT_DATE</span>());</code></pre>
+      <h3>Chaining the layers in one procedure</h3>
+      <pre><code><span class="kw">CREATE OR REPLACE PROCEDURE</span> `proj.gold.run_pipeline`()
+<span class="kw">BEGIN</span>
+  <span class="cm">-- 1. bronze -> silver: clean, type, dedupe</span>
+  <span class="kw">CREATE OR REPLACE TABLE</span> `proj.silver.orders` <span class="kw">AS</span>
+  <span class="kw">SELECT</span> order_id, customer_id,
+         <span class="fn">SAFE_CAST</span>(amount <span class="kw">AS NUMERIC</span>) <span class="kw">AS</span> amount,
+         <span class="fn">SAFE_CAST</span>(order_ts <span class="kw">AS TIMESTAMP</span>) <span class="kw">AS</span> order_ts
+  <span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> *, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span>
+           (<span class="kw">PARTITION BY</span> order_id <span class="kw">ORDER BY</span> _ingested_at <span class="kw">DESC</span>) rn
+    <span class="kw">FROM</span> `proj.bronze.orders_raw`
+    <span class="kw">WHERE</span> order_id <span class="kw">IS NOT NULL</span>
+  ) <span class="kw">WHERE</span> rn = <span class="st">1</span>;
+
+  <span class="cm">-- 2. silver -> gold: business aggregate</span>
+  <span class="kw">CREATE OR REPLACE TABLE</span> `proj.gold.daily_sales` <span class="kw">AS</span>
+  <span class="kw">SELECT</span> <span class="fn">DATE</span>(order_ts) <span class="kw">AS</span> sales_date, customer_id,
+         <span class="fn">SUM</span>(amount) <span class="kw">AS</span> revenue, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> orders
+  <span class="kw">FROM</span> `proj.silver.orders`
+  <span class="kw">GROUP BY</span> sales_date, customer_id;
+<span class="kw">END</span>;</code></pre>
+      <div class="mod-callout">
+        <span class="tag">One call, whole pipeline</span>
+        <p>Now a single <code class="ic">CALL proj.gold.run_pipeline()</code> refreshes silver and gold in order. Schedule that one call and your medallion flow runs itself. Logic lives in the procedure; the scheduler just triggers it.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q13</span><span>Why schedule a <code class="ic">CALL procedure()</code> rather than pasting the full transform SQL into the scheduled query?</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Separation of logic from scheduling. The procedure is version-controlled in one place; if the transform changes you edit the procedure, not the scheduler. Multiple schedules or manual runs all call the same tested logic, so no stale SQL drifts inside a forgotten scheduled query. It also makes the transform runnable on demand for backfills.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section class="mod-sec" id="orchestrate">
+      <div class="mod-num">14</div>
+      <h2 class="mt">End-to-end orchestration in Python</h2>
+      <p>Tying it together: one Python script that ingests, transforms, and validates — the kind of thing you'd schedule with Cloud Scheduler, cron, or Airflow.</p>
+      <pre><code><span class="kw">from</span> google.cloud <span class="kw">import</span> bigquery
+<span class="kw">import</span> logging
+
+logging.basicConfig(level=logging.INFO)
+client = bigquery.Client(project=<span class="st">"proj"</span>)
+
+<span class="kw">def</span> <span class="fn">run_query</span>(sql):
+    job = client.query(sql); job.result(); <span class="kw">return</span> job
+
+<span class="kw">def</span> <span class="fn">ingest_orders</span>():
+    cfg = bigquery.LoadJobConfig(
+        source_format=bigquery.SourceFormat.CSV,
+        skip_leading_rows=<span class="st">1</span>, write_disposition=<span class="st">"WRITE_APPEND"</span>,
+    )
+    job = client.load_table_from_uri(
+        <span class="st">"gs://my-bucket/incoming/orders_*.csv"</span>,
+        <span class="st">"proj.bronze.orders_raw"</span>, job_config=cfg,
+    )
+    job.result()
+    logging.info(<span class="st">f"Ingested {job.output_rows} rows"</span>)
+
+<span class="kw">def</span> <span class="fn">transform</span>():
+    run_query(<span class="st">"CALL `proj.gold.run_pipeline`()"</span>)
+    logging.info(<span class="st">"Silver + gold refreshed"</span>)
+
+<span class="kw">def</span> <span class="fn">validate</span>():
+    sql = <span class="st">"SELECT COUNTIF(revenue IS NULL) AS bad FROM `proj.gold.daily_sales`"</span>
+    bad = <span class="fn">list</span>(run_query(sql).result())[<span class="st">0</span>].bad
+    <span class="kw">if</span> bad > <span class="st">0</span>:
+        <span class="kw">raise</span> ValueError(<span class="st">f"Validation failed: {bad} null revenue rows"</span>)
+    logging.info(<span class="st">"Validation passed"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    ingest_orders(); transform(); validate()
+    logging.info(<span class="st">"Pipeline complete"</span>)</code></pre>
+      <div class="mod-callout">
+        <span class="tag">The shape to remember</span>
+        <p>Ingest → transform → validate, with the transform delegated to a stored procedure and a validation step that <em>raises</em> on bad data so the scheduler marks the run as failed. A pipeline that silently produces wrong numbers is worse than one that loudly stops.</p>
+      </div>
+      <div class="mod-drill">
+        <div class="mod-drill-q"><span class="qn">Q14</span><span>Why end with a validation step that raises, instead of trusting the transforms? Give a concrete example of what it catches.</span></div>
+        <button class="mod-toggle"><span>Show answer</span><span class="chev">▶</span></button>
+        <div class="mod-ans"><div class="mod-ans-inner">
+          <p>Transforms can succeed technically while producing bad data. Example: an upstream source changes its timestamp format, so <code class="ic">SAFE_CAST(order_ts AS TIMESTAMP)</code> silently returns NULL for every new row — no error, but gold now has null dates and revenue goes missing from dashboards. A validation query that counts NULLs and <code class="ic">raise</code>s turns that silent corruption into a visible failed run, so you catch it before management sees a broken dashboard. Fail loud, fail early.</p>
+        </div></div>
+      </div>
+    </section>
+
+  </div>
+</section>
+
+<div class="pager"><a class="prev" href="learning.html">← <span><span class="sub">Previous</span>Learning</span></a><div class="spacer"></div><a class="next" href="learning-excel.html"><span><span class="sub">Next</span>Excel Module</span> →</a></div>
+</main>
+<footer><div class="wrap"><p>© <span class="year"></span> Nasrul Khair — Dream big with data.</p></div></footer>
+<script>document.querySelectorAll('.year').forEach(function(y){y.textContent=new Date().getFullYear();});</script>
+<script>
+  document.querySelectorAll('.mod-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var ans = btn.nextElementSibling;
+      var open = btn.classList.toggle('open');
+      var label = btn.querySelector('span:first-child');
+      if(open){ ans.style.maxHeight = ans.scrollHeight + 'px'; label.textContent = 'Hide answer'; }
+      else { ans.style.maxHeight = '0'; label.textContent = 'Show answer'; }
+    });
+  });
+</script>
+</body>
+</html>
